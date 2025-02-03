@@ -8,6 +8,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Clubs from './Club';
 import Events from './Event';
 import CreateClub from './CreateClub';
+import Signup from './Signup';
+import Login from './Login';
 function App() {
   
   return (
@@ -22,6 +24,7 @@ function App() {
               <Nav.Link href="/link">Link</Nav.Link>
               <Nav.Link href="/clubs">Clubs</Nav.Link>
               <Nav.Link href="/events">Events</Nav.Link>
+              <Nav.Link href="/signup">Sign Up</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
@@ -34,6 +37,8 @@ function App() {
         <Route path="/clubs" element={<Clubs />} />
         <Route path="/events" element={<Events />} />
         <Route path="/create" element={<CreateClub />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
   </BrowserRouter>
 
