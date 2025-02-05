@@ -13,7 +13,7 @@ function Login(){
             </div>
          </div>
          <div>
-            Already have an account? <a href="/login">Login</a>
+            Dont have an account? <a href="/signup">Sign Up</a>
          </div>
     </div>
     );
