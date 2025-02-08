@@ -16,3 +16,10 @@ Post.destroy_all
     body: Faker::Lorem.paragraph(sentence_count: 3)
   )
 end
+
+20.times do 
+  User.create(
+    email: Faker::Internet.email,
+    password: Faker::Internet.password
+  )
+end
