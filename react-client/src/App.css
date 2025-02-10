@@ -113,8 +113,8 @@
 }
 
 #root,.ms-auto {
-  background-color: rgb(166, 142, 166); /* Light purple background */
-  padding: 0;
+  background-color: rgb(236, 228, 236); /* Light purple background */
+  padding: 0px;
   margin: 1 auto;
   gap:0px;
   font-size: 20px;
@@ -122,19 +122,29 @@
 
 
 .nav {
-  height: 60px; /* Make the nav container fill the navbar's height */
+  height: 60px; /* Fixed height for the navbar */
   display: flex;
-  justify-content: center; /* Center the content horizontally */
-  align-items: center; /* Center the content vertically */
+  justify-content: space-between; /* Space out items evenly */
+  align-items: center; /* Center items vertically */
+  width: 100%;
+  padding: 0 20px; /* Add padding for spacing */
+  box-sizing: border-box; /* Ensure padding is included in width */
+  background-color: rgb(236, 228, 236); /* Add background color for consistency */
 }
 
 .navbar {
-  width:1200px;
-  padding-top: 0;
-  height: 100%; /* Ensure the navbar fills the entire height of the viewport */
   display: flex;
-  align-items: center; /* Center content vertically in the navbar */
-  
+  align-items: center; /* Center items vertically */
+  height: 100%; /* Fill the height of the parent */
+  gap: 20px; /* Add spacing between items */
+}
+
+.navsignup {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Align items to the right */
+  gap: 10px; /* Add spacing between items */
+  flex: 1; /* Allow this section to grow and take available space */
 }
 
 
@@ -226,3 +236,4 @@
   border-radius: 5px;
   text-align: left; /* Align text to the left */
 }
+

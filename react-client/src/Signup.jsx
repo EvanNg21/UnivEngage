@@ -1,11 +1,5 @@
 function Signup(){
-    const [formData, setFormData] = useState({  
-        email: '',
-        password: '',
-        confirmPassword: ''
-    });
-
-    
+   
     return(
     <div class='home-container'>
         <h1 className="clubfade">Sign Up!</h1>

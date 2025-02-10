@@ -21,10 +21,12 @@ function App() {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
               <Nav.Link href="/home">Home</Nav.Link>
-              <Nav.Link href="/link">Link</Nav.Link>
-              <Nav.Link href="/clubs">Clubs</Nav.Link>
-              <Nav.Link href="/events">Events</Nav.Link>
-              <Nav.Link href="/signup">Sign Up</Nav.Link>
+              <Nav.Link href="/link">News</Nav.Link>
+              <Nav.Link href="/clubs">Find Orginizations</Nav.Link>
+              <Nav.Link href="/events">Attend Events</Nav.Link>
+            </Nav>
+            <Nav>
+              <Nav.Link href="/signup" className = "navsignup" >Sign Up</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
