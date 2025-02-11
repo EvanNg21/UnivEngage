@@ -25,8 +25,9 @@ function App() {
               <Nav.Link href="/clubs">Find Orginizations</Nav.Link>
               <Nav.Link href="/events">Attend Events</Nav.Link>
             </Nav>
-            <Nav>
-              <Nav.Link href="/signup" className = "navsignup" >Sign Up</Nav.Link>
+            <Nav className = "navsignup">
+              <Nav.Link href="/signup"  >Sign Up</Nav.Link>
+              <Nav.Link href="/login" >Login</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>

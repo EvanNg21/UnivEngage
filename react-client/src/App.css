@@ -113,7 +113,7 @@
 }
 
 #root,.ms-auto {
-  background-color: rgb(236, 228, 236); /* Light purple background */
+  background-color: white; /* Light purple background */
   padding: 0px;
   margin: 1 auto;
   gap:0px;
@@ -129,11 +129,12 @@
   width: 100%;
   padding: 0 20px; /* Add padding for spacing */
   box-sizing: border-box; /* Ensure padding is included in width */
-  background-color: rgb(236, 228, 236); /* Add background color for consistency */
+  background-color: white; /* Add background color for consistency */
 }
 
 .navbar {
   display: flex;
+  width: 100%;
   align-items: center; /* Center items vertically */
   height: 100%; /* Fill the height of the parent */
   gap: 20px; /* Add spacing between items */
