@@ -26,6 +26,7 @@ function App() {
               <Nav.Link href="/events">Attend Events</Nav.Link>
             </Nav>
             <Nav className = "navsignup">
+              <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
               <Nav.Link href="/signup"  >Sign Up</Nav.Link>
               <Nav.Link href="/login" >Login</Nav.Link>
             </Nav>
@@ -52,20 +53,9 @@ function App() {
 function Home() {
   return (
 
-    <div className="home-container">
+  <div className="home-container">
     <h1 className="center fade-in">Welcome to Univengage!</h1>
-    <div className="search-container">
-      {/* Search Bar */}
-      <div className="search-bar">
-        <input type="text" placeholder="Search for CLubs, Events or more"
-        /* onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            handleSearch(e.target.value);
-          }
-        }}*/
-        />
-      </div>
-    </div>
+    
   </div>
       
 

@@ -76,6 +76,10 @@
   
 }
 
+.home-body {
+  background-color: white;
+}
+
 .club-container {
   display: flex;
   flex-direction: column;
@@ -99,18 +103,15 @@
   align-items: center;
   justify-content: center;
   padding: 10px;
-  width: 800px; /* Stretch to full width if needed *//* Limit width for better design */
+  height: 30px;
+  font-size: 15px;
+  width: 300px; /* Stretch to full width if needed *//* Limit width for better design */
   gap: 10px; /* Add space between input and button */
-}
-.search-bar input {
-  flex: 1; /* Make input take most of the space */
-  height: 35px;
-  font-size: 16px;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
+  background-color: white;
   border-radius: 5px;
-  text-align: left; /* Align text to the left */
+  border: gray 1px solid;
 }
+
 
 #root,.ms-auto {
   background-color: white; /* Light purple background */
