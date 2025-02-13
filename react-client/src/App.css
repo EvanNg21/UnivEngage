@@ -218,9 +218,28 @@
 }
 
 .univengage{
-  font-size: 100px
+  display: flex;
+  background-color: #000000;
+  color: rgb(249, 248, 248) !important; 
+  margin-left: 30px;
+  align-items: center;
+  font-size: 25px !important;
+  height: 40px;
+  padding: 5px;
 }
-
+.signup-page{
+  display: flex;
+  align-items:center;
+  justify-content: left;
+  min-height: 50vh; /* Ensure it takes up the full viewport height */
+  background-color: #b3b3b3;
+  color: black;
+   /* Add padding for spacing */
+  gap: 10px; /* Add spacing between the title and the search bar */
+  width:100%;
+  padding: 100px;
+  flex-direction: column;
+}
 .signup-container {
   display: flex;
   flex-direction: column;

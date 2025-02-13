@@ -1,7 +1,7 @@
 function Signup(){
    
     return(
-    <div class='home-container'>
+    <div class='signup-page'>
         <h1 className="clubfade">Sign Up!</h1>
         <div className="signup-container">
             <div className="signup-bar">

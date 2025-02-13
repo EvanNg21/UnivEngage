@@ -13,13 +13,14 @@ function App() {
   return (
   <BrowserRouter>
       <Navbar  className="navbar">
-          <Navbar.Brand href="/home" style={{ fontSize: '30px', color: 'black', marginLeft: '10px' }} >Univengage</Navbar.Brand>
+          <Navbar.Brand className='univengage' href="/home"  >Univengage</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Nav className="ms-auto">
-              <Nav.Link style={{color:'black'}}href="/home">Home</Nav.Link>
-              <Nav.Link style={{color:'black'}}href="/link">News</Nav.Link>
+              <Nav.Link style={{color:'black'}}href="/">News</Nav.Link>
               <Nav.Link style={{color:'black'}}href="/clubs">Find Orginizations</Nav.Link>
               <Nav.Link style={{color:'black'}}href="/events">Attend Events</Nav.Link>
+              <Nav.Link style={{color:'black'}}href="/">Forms</Nav.Link>
+              <Nav.Link style={{color:'black'}}href="/">Campus Resources</Nav.Link>
             </Nav>
             <Nav className = "navsignup">
               <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
