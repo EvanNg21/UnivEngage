@@ -1,9 +1,7 @@
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
-import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Clubs from './Club';
 import Events from './Event';
@@ -15,19 +13,20 @@ function App() {
   return (
   <BrowserRouter>
       <Navbar  className="navbar">
-        <Container className='nav'>
-          <Navbar.Brand href="/home" style={{ fontSize: '30px', color: 'black' }} >Univengage</Navbar.Brand>
+          <Navbar.Brand className='univengage' href="/home"  >Univengage</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link href="/home">Home</Nav.Link>
-              <Nav.Link href="/link">Link</Nav.Link>
-              <Nav.Link href="/clubs">Clubs</Nav.Link>
-              <Nav.Link href="/events">Events</Nav.Link>
-              <Nav.Link href="/signup">Sign Up</Nav.Link>
+              <Nav.Link style={{color:'black'}}href="/">News</Nav.Link>
+              <Nav.Link style={{color:'black'}}href="/clubs">Find Orginizations</Nav.Link>
+              <Nav.Link style={{color:'black'}}href="/events">Attend Events</Nav.Link>
+              <Nav.Link style={{color:'black'}}href="/">Forms</Nav.Link>
+              <Nav.Link style={{color:'black'}}href="/">Campus Resources</Nav.Link>
             </Nav>
-          </Navbar.Collapse>
-        </Container>
+            <Nav className = "navsignup">
+              <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
+              <Nav.Link style={{color:'black'}} href="/signup"  >Sign Up</Nav.Link>
+              <Nav.Link style={{color:'black'}}href="/login" >Login</Nav.Link>
+            </Nav>
       </Navbar>
     <Routes>
         {/* Redirect from / to /home */}
@@ -46,26 +45,26 @@ function App() {
 }
 
 
+
 function Home() {
   return (
+  <div>
 
-    <div className="home-container">
-    <h1 className="center fade-in">Welcome to Univengage!</h1>
-    <div className="search-container">
-      {/* Search Bar */}
-      <div className="search-bar">
-        <input type="text" placeholder="Search for CLubs, Events or more"
-        /* onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            handleSearch(e.target.value);
-          }
-        }}*/
-        />
-      </div>
+    <div className="home-top">
+      <h1 className="center fade-in">Welcome to Univengage!</h1>
     </div>
-  </div>
-      
 
+    <div className = "home-button">
+        <button style={{width:'100px'}}>Previous</button>
+        <button style={{width:'100px'}}>Next</button>
+    </div>
+
+    <div className="home-body">
+      <h2>This is a new section with a different color!</h2>
+      <p>You can add more content here.</p>
+    </div>
+
+  </div>
   );
 }
 

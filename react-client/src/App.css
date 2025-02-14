@@ -1,8 +1,11 @@
+
 #root {
-  max-width: 100%;
-  max-height: 100%;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
 }
+
 
 .logo {
   height: 6em;
@@ -52,27 +55,44 @@
   align-items: center;
 }
 
-.nav-links {
-  color: #fff;
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  height: 100%
-}
 
-#root,.home-container {
+.home-top {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: top;
-  min-height: 100vh; /* Ensure it takes up the full viewport height */
-  background-color: #282424;
-  color: white;
+  align-items:center;
+  justify-content: left;
+  min-height: 50vh; /* Ensure it takes up the full viewport height */
+  background-color: #b3b3b3;
+  color: black;
    /* Add padding for spacing */
   gap: 10px; /* Add spacing between the title and the search bar */
   width:100%;
   padding: 100px;
+}
+
+.home-body {
+  background-color: white;
+  width: 100%;
+  height: 50vh;
+  
+}
+
+.home-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* Adds space between buttons */
+  margin-top: auto;
+  background-color: #b3b3b3;
+} 
+
+.home-button button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
   
 }
 
@@ -98,43 +118,42 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
-  width: 800px; /* Stretch to full width if needed *//* Limit width for better design */
+  padding: 5px;
+  height: 30px;
+  font-size: 15px;
+  width: 300px; /* Stretch to full width if needed *//* Limit width for better design */
   gap: 10px; /* Add space between input and button */
-}
-.search-bar input {
-  flex: 1; /* Make input take most of the space */
-  height: 35px;
-  font-size: 16px;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
+  background-color: #d9d9d9;
   border-radius: 5px;
-  text-align: left; /* Align text to the left */
+  border: gray 1px solid;
+  color:black;
 }
 
-#root,.ms-auto {
-  background-color: rgb(166, 142, 166); /* Light purple background */
-  padding: 0;
-  margin: 1 auto;
-  gap:0px;
+
+.ms-auto {
+  background-color: #d9d9d9; /* Light purple background */
+  padding: 0px;
+  margin: 0 auto;
+  gap:5px;
   font-size: 20px;
 }
 
-
-.nav {
-  height: 60px; /* Make the nav container fill the navbar's height */
+.navbar {
   display: flex;
-  justify-content: center; /* Center the content horizontally */
-  align-items: center; /* Center the content vertically */
+  width: 100%;
+  align-items: center; /* Center items vertically */
+  height: 60px; /* Fill the height of the parent */
+  gap: 10px; /* Add spacing between items */
+  background-color: #d9d9d9;
 }
 
-.navbar {
-  width:1200px;
-  padding-top: 0;
-  height: 100%; /* Ensure the navbar fills the entire height of the viewport */
+.navsignup {
   display: flex;
-  align-items: center; /* Center content vertically in the navbar */
-  
+  align-items: center;
+  justify-content: flex-end; /* Align items to the right */
+  margin-right: 10px;
+  gap: 10px; /* Add spacing between items */
+  flex: 1; /* Allow this section to grow and take available space */
 }
 
 
@@ -199,9 +218,28 @@
 }
 
 .univengage{
-  font-size: 100px
+  display: flex;
+  background-color: #000000;
+  color: rgb(249, 248, 248) !important; 
+  margin-left: 30px;
+  align-items: center;
+  font-size: 25px !important;
+  height: 40px;
+  padding: 5px;
 }
-
+.signup-page{
+  display: flex;
+  align-items:center;
+  justify-content: left;
+  min-height: 50vh; /* Ensure it takes up the full viewport height */
+  background-color: #b3b3b3;
+  color: black;
+   /* Add padding for spacing */
+  gap: 10px; /* Add spacing between the title and the search bar */
+  width:100%;
+  padding: 100px;
+  flex-direction: column;
+}
 .signup-container {
   display: flex;
   flex-direction: column;
@@ -222,7 +260,8 @@
   height: 35px;
   font-size: 16px;
   padding: 5px 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #e1d3d3;
   border-radius: 5px;
   text-align: left; /* Align text to the left */
 }
+

@@ -1,6 +1,6 @@
 function Login(){
     return(
-    <div class='home-container'>
+    <div class='signup-page'>
         <h1 className="clubfade">Log In!</h1>
         <div className="signup-container">
             <div className="signup-bar">
