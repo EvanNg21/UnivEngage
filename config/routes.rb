@@ -8,6 +8,8 @@ Rails.application.routes.draw do
           delete :destroy_multiple
         end
       end
+      post 'logins', to: 'logins#create'
+      delete 'logouts', to: 'logouts#destroy'
     end
   end
    
