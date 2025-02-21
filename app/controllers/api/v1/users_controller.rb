@@ -33,8 +33,25 @@ module Api
                     render json: { status: "ERROR", user: user.errors }, status: :unprocessable_entity
                 end
             end
+            
+            def destroy_multiple
+                user_ids = params[:ids]
+                render json: { status: "SUCCESS", message: "Users deleted" }, status: :ok
+                if user_ids.nil? || !user_ids.is_a?(Array)
+                    render json: { status: "ERROR", message: "Invalid user_ids parameter" }, status: :unprocessable_entity
+                    return
+                end
+                deleted_users = User.where(id: user_ids).destroy_all
+                render json: { status: "SUCCESS", message: "Users deleted", deleted_users: deleted_users }, status: :ok
+            end
 
             private
+
+            def set_user
+                @user = User.find(params[:id])
+            rescue ActiveRecord::RecordNotFound
+                render json: { status: "ERROR", message: "User not found" }, status: :not_found
+            end
 
             def user_params # only allow a list of trusted parameters through
                 params.require(:user).permit(:email, :password)
