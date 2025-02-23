@@ -5,7 +5,6 @@ function Signup(){
     const [confirmPassword, setConfirmPassword] = useState('');
 
     const [message, setMessage] = useState('');
-    const [isSuccess, setIsSuccess] = useState(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault();

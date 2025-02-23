@@ -2,14 +2,13 @@ Rails.application.routes.draw do
   # API routes should be in /api/v1
   namespace :api do
     namespace :v1 do
+      post 'logins', to: 'logins#create'
       resources :posts
       resources :users do
         collection do
           delete :destroy_multiple
         end
       end
-      post 'logins', to: 'logins#create'
-      delete 'logouts', to: 'logouts#destroy'
     end
   end
    

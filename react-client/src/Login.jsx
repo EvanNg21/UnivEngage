@@ -8,9 +8,12 @@ function Login(){
         event.preventDefault();
 
         const loginData = {
-            user: {
-                email: email,
-                password: password
+            
+            login:{
+                user: {
+                    email: email,
+                    password: password
+                }
             }
         };
 
@@ -25,6 +28,7 @@ function Login(){
 
             if (response.ok) {
                 const data = await response.json();
+                console.log(data);
                 setMessage("logged in!");
             } else {
                 const errorData = await response.json();
@@ -50,6 +54,7 @@ function Login(){
                     <div className="signup-bar">
                         <input type="text" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
                     </div>
+                    {message}
                     <button className="signup-button" type="submit">Login</button>
                     Dont have an account? <a href="/signup">Sign Up</a>
                 </div>
