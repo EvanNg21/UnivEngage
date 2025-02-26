@@ -1,8 +1,13 @@
 import React, {useState} from 'react'
+import {useNavigate} from 'react-router-dom'
+
+
 function Login(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
+    
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -24,13 +29,16 @@ function Login(){
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(loginData),
-                credentials :'include'
+                
             });
 
             if (response.ok) {
                 const data = await response.json();
+                localStorage.setItem('token', data.token);
                 console.log(data);
                 setMessage("logged in!");
+                alert(`welcome ${email}`);
+                navigate('/home');
             } else {
                 const errorData = await response.json();
                 console.error(errorData);
