@@ -46,7 +46,8 @@ class Api::V1::PostsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_post
-      @post = Post.find(params[:id])
+      @post = Post.find_by(id: params[:id])
+      render json: { error: 'Post not found' }, status: :not_found unless @post
     end
 
     # Only allow a list of trusted parameters through.
