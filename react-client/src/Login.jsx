@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 
 
-function Login(){
+function Login({handleLogin}){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -11,9 +11,7 @@ function Login(){
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
         const loginData = {
-            
             login:{
                 user: {
                     email: email,
@@ -35,6 +33,8 @@ function Login(){
             if (response.ok) {
                 const data = await response.json();
                 localStorage.setItem('token', data.token);
+                localStorage.setItem('email', email);
+                handleLogin(email);
                 console.log(data);
                 setMessage("logged in!");
                 alert(`welcome ${email}`);
@@ -52,23 +52,20 @@ function Login(){
 
     return(
     <div class='signup-page'>
-        <header>
-            <h1 className="clubfade">Log In!</h1>
-        </header>
-        <main>
+        <h1 className="clubfade">Log In!</h1>
             <form onSubmit={handleSubmit}>
-                <div className="signup-container">
-                    <div className="signup-bar">
+                <div className="login-container">
+                    <div className="login-bar">
                         <input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
                     </div>
                 </div>
-                <div className="signup-container">
-                    <div className="signup-bar">
+                <div className="login-container">
+                    <div className="login-bar">
                         <input type="text" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
                     </div>
                     {message}
-                    <button className="signup-button" type="submit">Login</button>
-                    Dont have an account? <a href="/signup">Sign Up</a>
+                    <button className="login-button" type="submit">Login</button>
+                    Dont have an account? <a href="/login">Sign Up</a>
                 </div>
             </form>
         </main>
