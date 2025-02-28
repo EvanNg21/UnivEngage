@@ -1,9 +1,11 @@
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
 }
+
 
 .logo {
   height: 6em;
@@ -40,3 +42,226 @@
 .read-the-docs {
   color: #888;
 }
+
+.back{
+  background-color: #282424;
+  height: 100vh;
+}
+
+.center {
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+
+.home-top {
+  display: flex;
+  align-items:center;
+  justify-content: left;
+  min-height: 50vh; /* Ensure it takes up the full viewport height */
+  background-color: #b3b3b3;
+  color: black;
+   /* Add padding for spacing */
+  gap: 10px; /* Add spacing between the title and the search bar */
+  width:100%;
+  padding: 100px;
+}
+
+.home-body {
+  background-color: white;
+  width: 100%;
+  height: 50vh;
+  
+}
+
+.home-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* Adds space between buttons */
+  margin-top: auto;
+  background-color: #b3b3b3;
+} 
+
+.home-button button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  
+}
+
+.club-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: top; /* Ensure it takes up the full viewport height */
+  background-color: #282424;
+  color: white;
+  padding-top: 100px;
+  padding-left: 50px;
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Stretch to full width if needed */
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  height: 30px;
+  font-size: 15px;
+  width: 300px; /* Stretch to full width if needed *//* Limit width for better design */
+  gap: 10px; /* Add space between input and button */
+  background-color: #d9d9d9;
+  border-radius: 5px;
+  border: gray 1px solid;
+  color:black;
+}
+
+
+.ms-auto {
+  background-color: #d9d9d9; /* Light purple background */
+  padding: 0px;
+  margin: 0 auto;
+  gap:5px;
+  font-size: 20px;
+}
+
+.navbar {
+  display: flex;
+  width: 100%;
+  align-items: center; /* Center items vertically */
+  height: 60px; /* Fill the height of the parent */
+  gap: 10px; /* Add spacing between items */
+  background-color: #d9d9d9;
+}
+
+.navsignup {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Align items to the right */
+  margin-right: 10px;
+  gap: 10px; /* Add spacing between items */
+  flex: 1; /* Allow this section to grow and take available space */
+}
+
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px); /* Optional: Adds a slight slide effect */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes clubfadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px); /* Optional: Adds a slight slide effect */
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
+
+/* Apply fade-in animation to the heading */
+.fade-in {
+  animation: fadeIn 2s ease-in-out;
+  opacity: 1; /* Ensure the element is visible after animation */
+}
+
+.clubfade{
+  animation: clubfadeIn 2s ease-in-out;
+  opacity: 1;
+  text-align: left;
+  font-size: 50px;
+}
+
+.signButton {
+  width: 100px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.roundInput {
+  border-radius: 10%;
+  border: 1px solid #000000;
+  height: 50px;
+}
+
+.butt {
+  background-color: #282424;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: right;
+  padding: 60px;
+}
+
+.univengage{
+  display: flex;
+  background-color: #000000;
+  color: rgb(249, 248, 248) !important; 
+  margin-left: 30px;
+  align-items: center;
+  font-size: 25px !important;
+  height: 40px;
+  padding: 5px;
+}
+.signup-page{
+  display: flex;
+  align-items:center;
+  justify-content: left;
+  min-height: 50vh; /* Ensure it takes up the full viewport height */
+  background-color: #b3b3b3;
+  color: black;
+   /* Add padding for spacing */
+  gap: 10px; /* Add spacing between the title and the search bar */
+  width:100%;
+  padding: 100px;
+  flex-direction: column;
+}
+.signup-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Stretch to full width if needed */
+}
+.signup-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  width: 300px; /* Stretch to full width if needed *//* Limit width for better design */
+  gap: 10px; /* Add space between input and button */
+}
+.signup-bar input {
+  flex: 1; /* Make input take most of the space */
+  height: 35px;
+  font-size: 16px;
+  padding: 5px 10px;
+  border: 1px solid #e1d3d3;
+  border-radius: 5px;
+  text-align: left; /* Align text to the left */
+}
+
