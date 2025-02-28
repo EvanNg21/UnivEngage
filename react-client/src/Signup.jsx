@@ -61,7 +61,10 @@ function Signup(){
 
     return(
     <div class='signup-page'>
-        <h1 className="clubfade">Sign Up!</h1>
+        <header>
+            <h1 className="clubfade">Sign Up!</h1>
+        </header>
+        <main>
             <form onSubmit={handleSubmit}>
                 <div className="signup-container">
                     <div className="signup-bar">
@@ -83,7 +86,8 @@ function Signup(){
             {message}
             <div>
             Already have an account? <a href="/login">Login</a>
-         </div>
+            </div>
+        </main>
     </div>
     );
 }
