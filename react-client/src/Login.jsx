@@ -51,8 +51,11 @@ function Login({handleLogin}){
     };
 
     return(
-    <div class='signup-page'>
+    <div className='login-page'>
+        <header>
         <h1 className="clubfade">Log In!</h1>
+        </header>
+        <main>
             <form onSubmit={handleSubmit}>
                 <div className="login-container">
                     <div className="login-bar">

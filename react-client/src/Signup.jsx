@@ -21,46 +21,44 @@ function Signup(){
             alert('Invalid email');
             return;
         }
-    const userData = {
-        user:{
-            email: email,
-            password: password
-        }
-    };
+        const userData = {
+            user:{
+                email: email,
+                password: password
+            }
+        };
 
-    try {
-        const response = await fetch('http://127.0.0.1:3000/api/v1/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-        });
+        try {
+            const response = await fetch('http://127.0.0.1:3000/api/v1/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
 
-        if (response.ok) {
-            const data = await response.json();
-            setEmail('');
-            setPassword('');
-            setConfirmPassword('');
-            console.log('success', data);
-            setMessage("signup successful");
-            setIsSuccess(true);
-        } else {
-            const errorData = await response.json();
-            console.error(errorData);
-            setMessage("signup failed");
-            setIsSuccess(false);
-        }
+            if (response.ok) {
+                const data = await response.json();
+                setEmail('');
+                setPassword('');
+                setConfirmPassword('');
+                console.log('success', data);
+                setMessage("signup successful");
+
+            } else {
+                const errorData = await response.json();
+                console.error(errorData);
+                setMessage("signup failed");
+            }
         } catch (error) {
             console.error(error);
-            setMessage("signup failed");   
-            setIsSuccess(false);
+            setMessage("error occured");   
         }
     };
        
 
     return(
-    <div class='signup-page'>
+    <div className='signup-page'>
         <header>
             <h1 className="clubfade">Sign Up!</h1>
         </header>
@@ -80,13 +78,11 @@ function Signup(){
                     <div className="signup-bar">
                         <input type="text" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
                     </div>
+                    {message}
                     <button className="signup-button" type="submit">Sign Up</button>
+                    Already have an account? <a href="/login">Login</a>
                 </div>
             </form>
-            {message}
-            <div>
-            Already have an account? <a href="/login">Login</a>
-            </div>
         </main>
     </div>
     );
