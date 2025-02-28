@@ -51,21 +51,21 @@ function Login({handleLogin}){
     };
 
     return(
-    <div class='signup-page'>
+    <div class='login-page'>
         <h1 className="clubfade">Log In!</h1>
             <form onSubmit={handleSubmit}>
-                <div className="signup-container">
-                    <div className="signup-bar">
+                <div className="login-container">
+                    <div className="login-bar">
                         <input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
                     </div>
                 </div>
-                <div className="signup-container">
-                    <div className="signup-bar">
+                <div className="login-container">
+                    <div className="login-bar">
                         <input type="text" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
                     </div>
                     {message}
-                    <button className="signup-button" type="submit">Login</button>
-                    Dont have an account? <a href="/signup">Sign Up</a>
+                    <button className="login-button" type="submit">Login</button>
+                    Dont have an account? <a href="/login">Sign Up</a>
                 </div>
             </form>
     </div>

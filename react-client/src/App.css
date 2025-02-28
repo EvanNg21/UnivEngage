@@ -274,4 +274,53 @@
   height: 40px;
   
 }
+/**/
+.login-page{
+  display: flex;
+  align-items:center;
+  justify-content: left;
+  min-height: 50vh; /* Ensure it takes up the full viewport height */
+  background-color: #b3b3b3;
+  color: black;
+   /* Add padding for spacing */
+  gap: 10px; /* Add spacing between the title and the search bar */
+  width:100%;
+  padding: 100px;
+  flex-direction: column;
+}
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Stretch to full width if needed */
+}
+.login-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  width: 300px; /* Stretch to full width if needed *//* Limit width for better design */
+  gap: 10px; /* Add space between input and button */
+}
+.login-bar input {
+  flex: 1; /* Make input take most of the space */
+  height: 35px;
+  font-size: 16px;
+  padding: 5px 10px;
+  border: 1px solid #e1d3d3;
+  border-radius: 5px;
+  text-align: left; /* Align text to the left */
+}
+
+.login-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column !important; 
+  border-radius: 5px;
+  height: 40px;
+  
+}
+
 
