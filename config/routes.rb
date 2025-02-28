@@ -3,7 +3,6 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post 'logins', to: 'logins#create'
-      post 'logouts', to: 'logouts#create'
       resources :posts
       resources :users do
         collection do

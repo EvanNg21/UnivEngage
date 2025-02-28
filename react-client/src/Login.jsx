@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 
 
-function Login(){
+function Login({handleLogin}){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -11,9 +11,7 @@ function Login(){
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
         const loginData = {
-            
             login:{
                 user: {
                     email: email,
@@ -35,6 +33,8 @@ function Login(){
             if (response.ok) {
                 const data = await response.json();
                 localStorage.setItem('token', data.token);
+                localStorage.setItem('email', email);
+                handleLogin(email);
                 console.log(data);
                 setMessage("logged in!");
                 alert(`welcome ${email}`);

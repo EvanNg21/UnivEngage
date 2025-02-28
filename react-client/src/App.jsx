@@ -8,7 +8,31 @@ import Events from './Event';
 import CreateClub from './CreateClub';
 import Signup from './Signup';
 import Login from './Login';
+import React, { useState, useEffect } from 'react';
 function App() {
+  const[isLoggedIn, setIsLoggedIn] = useState(false);
+  const[userEmail, setUserEmail] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const savedEmail = localStorage.getItem('email');
+    if (token && savedEmail) {
+      setIsLoggedIn(true);
+      setUserEmail(savedEmail);
+    }
+  }, []);
+
+  const handleLogin = (email) => {
+    setIsLoggedIn(true);
+    setUserEmail(email);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('email')
+    setIsLoggedIn(false);
+    setUserEmail('');
+  };
   
   return (
     <BrowserRouter>
@@ -24,8 +48,17 @@ function App() {
               </Nav>
               <Nav className = "navsignup">
                 <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
-                <Nav.Link style={{color:'black'}} href="/signup"  >Sign Up</Nav.Link>
-                <Nav.Link style={{color:'black'}}href="/login" >Login</Nav.Link>
+                {isLoggedIn ? (
+                  <>
+                  <Nav.Link style={{color:'black'}} disabled>{userEmail}</Nav.Link>
+                  <Nav.Link style={{color:'black'}} onClick={handleLogout}>Logout</Nav.Link>
+                  </>
+                ):(
+                  <>
+                  <Nav.Link style={{color:'black'}} href="/signup"  >Sign Up</Nav.Link>
+                  <Nav.Link style={{color:'black'}}href="/login" >Login</Nav.Link>
+                  </>
+                )}
               </Nav>
         </Navbar>
       <Routes>
@@ -37,7 +70,7 @@ function App() {
           <Route path="/events" element={<Events />} />
           <Route path="/create" element={<CreateClub />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login handleLogin={handleLogin} />} />
         </Routes>
     </BrowserRouter>
  
