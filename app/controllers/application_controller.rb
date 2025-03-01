@@ -4,11 +4,11 @@ class ApplicationController < ActionController::API
     private
 
     def authenticate_user!
-        token = request.headers['Authorization']&.split(' ')&.last
+        token = request.headers["Authorization"]&.split(" ")&.last
         if token
           begin
-            decoded_token = JWT.decode(token, Rails.application.credentials.secret_key_base, true, algorithm: 'HS256')
-            @current_user = User.find(decoded_token[0]['user_id'])
+            decoded_token = JWT.decode(token, Rails.application.credentials.secret_key_base, true, algorithm: "HS256")
+            @current_user = User.find(decoded_token[0]["user_id"])
             Rails.logger.info "#{decoded_token[0]['user_id']} User authenticated: #{@current_user.email}"
           rescue JWT::DecodeError => e
             Rails.logger.error "Token decode error: #{e.message}"

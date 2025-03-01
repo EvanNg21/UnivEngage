@@ -1,7 +1,7 @@
 module Api
     module V1
         class UsersController < ApplicationController
-            skip_before_action :authenticate_user!, only: [:create, :index]
+            skip_before_action :authenticate_user!, only: [ :create, :index ]
             before_action :set_user, only: [ :show, :update, :destroy ]
 
             def index
@@ -34,7 +34,7 @@ module Api
                     render json: { status: "ERROR", user: user.errors }, status: :unprocessable_entity
                 end
             end
-            
+
             def destroy_multiple
                 user_ids = params[:ids]
                 render json: { status: "SUCCESS", message: "Users deleted" }, status: :ok
