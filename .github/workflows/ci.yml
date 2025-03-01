@@ -19,6 +19,11 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Disable frozen mode for bundle install
+        run: |
+          bundle config set frozen false
+          bundle install
+
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
 
@@ -40,12 +45,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    # services:
-    #  redis:
-    #    image: redis
-    #    ports:
-    #      - 6379:6379
-    #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl libjemalloc2 libvips sqlite3
@@ -59,10 +58,14 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Disable frozen mode for bundle install
+        run: |
+          bundle config set frozen false
+          bundle install
+
       - name: Run tests
         env:
           RAILS_ENV: test
-          # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test
 
       - name: Keep screenshots from failed system tests

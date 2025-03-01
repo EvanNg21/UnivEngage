@@ -8,39 +8,72 @@ import Events from './Event';
 import CreateClub from './CreateClub';
 import Signup from './Signup';
 import Login from './Login';
+import React, { useState, useEffect } from 'react';
 function App() {
+  const[isLoggedIn, setIsLoggedIn] = useState(false);
+  const[userEmail, setUserEmail] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const savedEmail = localStorage.getItem('email');
+    if (token && savedEmail) {
+      setIsLoggedIn(true);
+      setUserEmail(savedEmail);
+    }
+  }, []);
+
+  const handleLogin = (email) => {
+    setIsLoggedIn(true);
+    setUserEmail(email);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('email')
+    setIsLoggedIn(false);
+    setUserEmail('');
+  };
   
   return (
-  <BrowserRouter>
-      <Navbar  className="navbar">
-          <Navbar.Brand className='univengage' href="/home"  >Univengage</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Nav className="ms-auto">
-              <Nav.Link style={{color:'black'}}href="/">News</Nav.Link>
-              <Nav.Link style={{color:'black'}}href="/clubs">Find Orginizations</Nav.Link>
-              <Nav.Link style={{color:'black'}}href="/events">Attend Events</Nav.Link>
-              <Nav.Link style={{color:'black'}}href="/">Forms</Nav.Link>
-              <Nav.Link style={{color:'black'}}href="/">Campus Resources</Nav.Link>
-            </Nav>
-            <Nav className = "navsignup">
-              <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
-              <Nav.Link style={{color:'black'}} href="/signup"  >Sign Up</Nav.Link>
-              <Nav.Link style={{color:'black'}}href="/login" >Login</Nav.Link>
-            </Nav>
-      </Navbar>
-    <Routes>
-        {/* Redirect from / to /home */}
-        <Route path="/" element={<Navigate to="/home" />} />
-        {/* Define route for /home */}
-        <Route path="/home" element={<Home />} />
-        <Route path="/clubs" element={<Clubs />} />
-        <Route path="/events" element={<Events />} />
-        <Route path="/create" element={<CreateClub />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-  </BrowserRouter>
-
+    <BrowserRouter>
+        <Navbar  className="navbar">
+            <Navbar.Brand className='univengage' href="/home"  >Univengage</Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+              <Nav className="ms-auto">
+                <Nav.Link style={{color:'black'}}href="/">News</Nav.Link>
+                <Nav.Link style={{color:'black'}}href="/clubs">Find Orginizations</Nav.Link>
+                <Nav.Link style={{color:'black'}}href="/events">Attend Events</Nav.Link>
+                <Nav.Link style={{color:'black'}}href="/">Forms</Nav.Link>
+                <Nav.Link style={{color:'black'}}href="/">Campus Resources</Nav.Link>
+              </Nav>
+              <Nav className = "navsignup">
+                <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
+                {isLoggedIn ? (
+                  <>
+                  <Nav.Link style={{color:'black'}} disabled>{userEmail}</Nav.Link>
+                  <Nav.Link style={{color:'black'}} onClick={handleLogout}>Logout</Nav.Link>
+                  </>
+                ):(
+                  <>
+                  <Nav.Link style={{color:'black'}} href="/signup"  >Sign Up</Nav.Link>
+                  <Nav.Link style={{color:'black'}}href="/login" >Login</Nav.Link>
+                  </>
+                )}
+              </Nav>
+        </Navbar>
+      <Routes>
+          {/* Redirect from / to /home */}
+          <Route path="/" element={<Navigate to="/home" />} />
+          {/* Define route for /home */}
+          <Route path="/home" element={<Home />} />
+          <Route path="/clubs" element={<Clubs />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/create" element={<CreateClub />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login handleLogin={handleLogin} />} />
+        </Routes>
+    </BrowserRouter>
+ 
   );
 }
 

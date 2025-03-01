@@ -17,9 +17,4 @@ Post.destroy_all
   )
 end
 
-20.times do 
-  User.create(
-    email: Faker::Internet.email,
-    password: Faker::Internet.password
-  )
-end
+
