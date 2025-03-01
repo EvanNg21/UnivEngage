@@ -18,6 +18,11 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+          
+      - name: Disable frozen mode for bundle install
+        run: |
+          bundle config set frozen false
+          bundle install
 
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
