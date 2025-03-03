@@ -8,6 +8,7 @@ import Events from './Event';
 import CreateClub from './CreateClub';
 import Signup from './Signup';
 import Login from './Login';
+import Profile from './Profile';
 import React, { useState, useEffect } from 'react';
 function App() {
   const[isLoggedIn, setIsLoggedIn] = useState(false);
@@ -50,7 +51,7 @@ function App() {
                 <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
                 {isLoggedIn ? (
                   <>
-                  <Nav.Link style={{color:'black'}} disabled>{userEmail}</Nav.Link>
+                  <Nav.Link style={{color:'black'}} href="/profile">{userEmail}</Nav.Link>
                   <Nav.Link style={{color:'black'}} onClick={handleLogout}>Logout</Nav.Link>
                   </>
                 ):(
@@ -71,6 +72,7 @@ function App() {
           <Route path="/create" element={<CreateClub />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login handleLogin={handleLogin} />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
     </BrowserRouter>
  
