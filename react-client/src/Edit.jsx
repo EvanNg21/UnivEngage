@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
 import Button from 'react-bootstrap/esm/Button';
-function Profile() {
+import { useNavigate } from 'react-router-dom';
+function Edit() {
     const [userEmail, setUserEmail] = useState('');
     const token = localStorage.getItem('token');
     const userID = localStorage.getItem('id');
+    const Navigate = useNavigate();
     const [userData, setUserData] = useState({
         username: '',
         email: '',
@@ -48,8 +50,7 @@ function Profile() {
                         first_name: data.user.first_name, // Underscore
                         last_name: data.user.last_name,   // Underscore
                         date_of_birth: data.user.date_of_birth,
-                        bio: data.user.bio, // Underscore
-                        profile_picture: data.user.profile_picture
+                        bio: data.user.bio // Underscore
                     });
                 } else {
                     console.error('Failed to fetch user data');
@@ -61,22 +62,55 @@ function Profile() {
         fetchUserData();
     }, [userID]);
 
+    const handleInputChange = (event) => {
+        const { name, value} = event.target;
+        setUserData((prevData) => ({...prevData,
+            [name]: value,
+        }));
+    };
+ 
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        // Perform form submission logic here
+        try{
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/users/${userID}`,{
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(userData),
+            });
+            if (response.ok){
+                console.log('User data changed succesfully');
+                Navigate("/profile");
+            } else{
+                console.error('Failed to update user data');
+            }
+        } catch (error){
+            console.error('Error update user data', error);
+        }
+    };
+        
+    
+
     return (
         <div className='profile-page'>
             <header className='profile-header'>
                 <h1 className="clubfade">My Profile</h1>
-                <h2 style={{ paddingLeft: '100px', paddingTop: '50px' }}>Bio: {userData.bio}</h2>
+                <h2 style={{ paddingLeft: '100px', paddingTop: '50px' }}>Bio: <input style={{color: 'white'}} type="text" name= "bio" placeholder="bio" value={userData.bio} onChange={handleInputChange}/></h2>
             </header>
             <div className='profile-body'>
-                <p>Username: {userData.username}</p>
+                <p>Username: <input style={{color: 'white'}} type="text" name="username" placeholder="username" value={userData.username} onChange={handleInputChange}/></p>
                 <p>Email: {userEmail}</p>
-                <p>First Name: {userData.first_name}</p> 
-                <p>Last Name: {userData.last_name}</p>   
-                <p>Birthday: {userData.date_of_birth}</p> 
-                <Button variant="primary"href="/profile/edit">Edit</Button>
+                <p>First Name: <input style={{color: 'white'}} type="text" name= "first_name" placeholder="First Name" value={userData.first_name} onChange={handleInputChange}/></p> 
+                <p>Last Name: <input style={{color: 'white'}} type="text" name= "last_name"placeholder="Last Name" value={userData.last_name} onChange={handleInputChange}/></p>   
+                <p>Birthday: <input style={{color: 'white'}} type="text" name= "date_of_birth" placeholder="Birthday" value={userData.date_of_birth} onChange={handleInputChange}/></p> 
+
+                <Button variant="primary"onClick={handleSubmit}>Save</Button>
             </div>
         </div>
     );
 }
 
-export default Profile;
+export default Edit;
