@@ -34,6 +34,7 @@ function Login({handleLogin}){
                 const data = await response.json();
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('email', email);
+                localStorage.setItem('id', data.user.id);
                 handleLogin(email);
                 console.log(data);
                 setMessage("logged in!");
