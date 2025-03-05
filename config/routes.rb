@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       post 'logins', to: 'logins#create'
       resources :posts
+      resources :clubs
       resources :users do
         collection do
           delete :destroy_multiple
