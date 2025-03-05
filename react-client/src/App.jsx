@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate, useNavigate} from 'react-router-dom';
 import './App.css';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -8,11 +8,13 @@ import Events from './Event';
 import CreateClub from './CreateClub';
 import Signup from './Signup';
 import Login from './Login';
+import Profile from './Profile';
+import Edit from './Edit';
 import React, { useState, useEffect } from 'react';
 function App() {
   const[isLoggedIn, setIsLoggedIn] = useState(false);
   const[userEmail, setUserEmail] = useState('');
-
+  const userId = localStorage.getItem('id');
   useEffect(() => {
     const token = localStorage.getItem('token');
     const savedEmail = localStorage.getItem('email');
@@ -50,8 +52,8 @@ function App() {
                 <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
                 {isLoggedIn ? (
                   <>
-                  <Nav.Link style={{color:'black'}} disabled>{userEmail}</Nav.Link>
-                  <Nav.Link style={{color:'black'}} onClick={handleLogout}>Logout</Nav.Link>
+                  <Nav.Link style={{color:'black'}} href="/profile">{userEmail}</Nav.Link>
+                  <Nav.Link style={{color:'black'}} href="/login" onClick={handleLogout}>Logout</Nav.Link>
                   </>
                 ):(
                   <>
@@ -71,6 +73,8 @@ function App() {
           <Route path="/create" element={<CreateClub />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login handleLogin={handleLogin} />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="profile/edit" element={<Edit />} />
         </Routes>
     </BrowserRouter>
  
@@ -96,7 +100,6 @@ function Home() {
       <h2>This is a new section with a different color!</h2>
       <p>You can add more content here.</p>
     </div>
-
   </div>
   );
 }

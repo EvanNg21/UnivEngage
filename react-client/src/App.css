@@ -324,3 +324,28 @@
 }
 
 
+.profile-page {
+  background-color: #282424;
+  color: white;
+  height: 100vh;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: top; /* Ensure it takes up the full viewport height */
+  padding-top: 100px;
+  padding-left: 50px;
+  font-size: 20px;
+}
+
+.profile-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: top; /* Ensure it takes up the full viewport height */
+  padding-top: 50px;
+  padding-left: 150px;
+  font-size: 20px;
+}

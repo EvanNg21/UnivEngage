@@ -1,7 +1,7 @@
 module Api
     module V1
         class UsersController < ApplicationController
-            skip_before_action :authenticate_user!, only: [ :create, :index ]
+            skip_before_action :authenticate_user!, only: [ :create, :index, :update ]
             before_action :set_user, only: [ :show, :update, :destroy ]
 
             def index
@@ -55,7 +55,7 @@ module Api
             end
 
             def user_params # only allow a list of trusted parameters through
-                params.require(:user).permit(:email, :password)
+                params.require(:user).permit(:email, :password, :first_name, :last_name, :bio, :date_of_birth, :profile_picture, :username)
             end
         end
     end
