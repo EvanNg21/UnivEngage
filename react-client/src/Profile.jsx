@@ -62,7 +62,7 @@ function Profile() {
     }, [userID]);
 
     return (
-        <div className='profile-page'>
+        <div className='base-page'>
             <header className='profile-header'>
                 <h1 className="clubfade">My Profile</h1>
                 <h2 style={{ paddingLeft: '100px', paddingTop: '50px' }}>Bio: {userData.bio}</h2>
