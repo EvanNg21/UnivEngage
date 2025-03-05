@@ -101,8 +101,8 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: top; /* Ensure it takes up the full viewport height */
-  background-color: #282424;
-  color: white;
+  background-color: #b3b3b3;
+  color: black;
   padding-top: 100px;
   padding-left: 50px;
 }
@@ -225,7 +225,6 @@
 }
 
 .butt {
-  background-color: #282424;
   border: none;
   cursor: pointer;
   display: flex;
@@ -341,8 +340,8 @@
 
 
 .base-page {
-  background-color: #282424;
-  color: white;
+  background-color: #b3b3b3;
+  color: black;
   height: 100vh;
 }
 
