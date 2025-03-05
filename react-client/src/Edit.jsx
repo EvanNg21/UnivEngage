@@ -83,7 +83,7 @@ function Edit() {
             });
             if (response.ok){
                 console.log('User data changed succesfully');
-                Navigate("/profile");
+                Navigate(`/profile/${userId}`);
             } else{
                 console.error('Failed to update user data');
             }
