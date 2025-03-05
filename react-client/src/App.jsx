@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, Navigate, useNavigate} from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate, useParams} from 'react-router-dom';
 import './App.css';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -52,7 +52,7 @@ function App() {
                 <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
                 {isLoggedIn ? (
                   <>
-                  <Nav.Link style={{color:'black'}} href="/profile">{userEmail}</Nav.Link>
+                  <Nav.Link style={{color:'black'}} href={`/profile/${userId}`}>{userEmail}</Nav.Link>
                   <Nav.Link style={{color:'black'}} href="/login" onClick={handleLogout}>Logout</Nav.Link>
                   </>
                 ):(
@@ -73,9 +73,9 @@ function App() {
           <Route path="/create" element={<CreateClub />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login handleLogin={handleLogin} />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="profile/edit" element={<Edit />} />
-        </Routes>
+          <Route path="/profile/:userId" element={<Profile />} />
+          <Route path="/profile/edit/:userId" element={<Edit />} />
+      </Routes>
     </BrowserRouter>
  
   );
