@@ -27,7 +27,7 @@ module Api
             end
 
             def create # create club
-                club = club.new(club_params)
+                club = Club.new(club_params)
                 if club.save
                     render json: { status: "SUCCESS", club: club }, status: :created
                 else
