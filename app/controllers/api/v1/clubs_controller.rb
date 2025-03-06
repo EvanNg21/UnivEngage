@@ -1,7 +1,7 @@
 module Api
     module V1
         class ClubsController < ApplicationController
-            skip_before_action :authenticate_user!, only: [ :create, :index, :update ]
+            skip_before_action :authenticate_user!, only: [ :create, :index, :update, :show, :destroy ]
             before_action :set_club, only: [ :show, :update, :destroy ]
 
             def index
@@ -10,7 +10,7 @@ module Api
             end
 
             def show
-                render json: { status: "SUCCESS", clubs:@clubs }, status: :ok
+                render json: { status: "SUCCESS", club:@club }, status: :ok
             end
 
             def update
@@ -38,13 +38,13 @@ module Api
             private
 
             def set_club
-                @club = Club.find(params[:club_id])
+                @club = Club.find(params[:id])
             rescue ActiveRecord::RecordNotFound
                 render json: { status: "ERROR", message: "Club not found" }, status: :not_found
             end
 
             def club_params # only allow a list of trusted parameters through
-                params.require(:club).permit(:club_name, :club_id)
+                params.require(:club).permit(:club_name, :club_id, :owner_id, :members, :description)
             end
         end
     end
