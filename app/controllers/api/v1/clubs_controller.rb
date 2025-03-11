@@ -1,9 +1,35 @@
 module Api
     module V1
       class ClubsController < ApplicationController
-        skip_before_action :authenticate_user!, only: [:create, :index, :update, :show, :destroy, :join, :leave, :members]
-        before_action :set_club, only: [:show, :update, :destroy]
-  
+        skip_before_action :authenticate_user!, only: [:create, :index, :update, :show, :destroy, :join, :leave, :members,]
+        before_action :set_club, only: [:show, :update, :destroy,]
+
+        def promote_to_admin
+          club = Club.find(params[:id])
+          user = User.find(params[:user_id]) # Assuming user_id is passed in the request
+        
+          # Find the club_member record and update the role to 'admin'
+          club_member = club.club_members.find_by(user_id: user.id)
+          if club_member&.update(role: 'admin')
+            render json: { status: 'SUCCESS', message: 'User promoted to admin' }
+          else
+            render json: { status: 'ERROR', message: 'Failed to promote user to admin' }, status: :unprocessable_entity
+          end
+        end
+
+        def demote_to_member
+          club = Club.find(params[:id])
+          user = User.find(params[:user_id]) # Assuming user_id is passed in the request
+        
+          # Find the club_member record and update the role to 'admin'
+          club_member = club.club_members.find_by(user_id: user.id)
+          if club_member&.update(role: 'member')
+            render json: { status: 'SUCCESS', message: 'User demoted to member' }
+          else
+            render json: { status: 'ERROR', message: 'Failed to demote user to member' }, status: :unprocessable_entity
+          end
+        end
+        
         def join
           club = Club.find(params[:id])
           user = User.find(params[:user_id]) # Assuming user_id is passed in the request
@@ -28,7 +54,7 @@ module Api
   
         def members
           club = Club.find(params[:id])
-          members = club.members.select(:email, :first_name, :last_name, :user_id)
+          members = club.members.select(:email, :first_name, :last_name, :user_id, :role)
   
           render json: { status: 'SUCCESS', members: members }
         end
@@ -58,8 +84,9 @@ module Api
   
         def create # create club
           club = Club.new(club_params)
-          club.members << User.find(club_params[:owner_id])
           if club.save
+            owner = User.find(params[:owner_id])
+            club.add_admin(owner) 
             render json: { status: "SUCCESS", club: club }, status: :created
           else
             render json: { status: "ERROR", club: club.errors }, status: :unprocessable_entity

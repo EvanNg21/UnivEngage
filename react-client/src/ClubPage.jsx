@@ -4,8 +4,11 @@ import Button from 'react-bootstrap/esm/Button';
 function ClubPage(){
     const { clubId } = useParams();
     const loggedinUser = localStorage.getItem('id');
+    const token = localStorage.getItem('token');
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isOwner, setIsOwner] = useState(false);
     const [isMember, setIsMember] = useState(false);
+    const [memberData, setMemberData] = useState([]);
     const [ownerData, setOwnerData] = useState({
         first_name: '',
         last_name: '',
@@ -22,7 +25,7 @@ function ClubPage(){
     useEffect(() => {
         const loggedinUser = localStorage.getItem('id');
         if (loggedinUser === clubData.owner_id) {
-            setIsAdmin(true);
+            setIsOwner(true);
         }
     }, [clubData.owner_id, loggedinUser]);
 
@@ -64,6 +67,7 @@ function ClubPage(){
     }, [clubId, loggedinUser]);
 
     //owner data
+    
     useEffect(() => {
         const fetchOwner = async () => {
             try {
@@ -90,6 +94,7 @@ function ClubPage(){
         };
         fetchOwner();
     }, [clubData.owner_id]);
+    
 
     const handleJoin = async () => {
         try {
@@ -110,7 +115,36 @@ function ClubPage(){
         }
     };
     
+    useEffect(() => {
+        const fetchAdmin = async () =>{
+            const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+            if (!token) {
+                console.error('Token not found');
+                return;
+            }
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}/members`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Member Data:', data); // Debugging
+                    setMemberData(data.members);
 
+                    const userIsAdmin = data.members.some(member => member.user_id.toString() === loggedinUser && member.role === 'admin');
+                    setIsAdmin(userIsAdmin);
+                } else {
+                    console.error('Failed to fetch user data');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+        fetchAdmin();
+    }, [clubId, loggedinUser]);
    
     return (
         <div className='base-page'>
@@ -129,13 +163,13 @@ function ClubPage(){
                 {clubData.members.length > 0 ? (
                   <ul>
                     {clubData.members.map((member) => (
-                      <li key={member.user_id}>{member.first_name} {member.last_name}</li>
+                      <li key={member.user_id}>{member.first_name} {member.last_name}, {member.email}</li>
                     ))}
                   </ul>
                 ) : (
                   <p>No members found</p>
                 )}
-                {isAdmin ? (
+                {isAdmin || isOwner ? (
                   <>
                   <Button variant="primary" href={`/clubPage/edit/${clubId}`}>Edit</Button>
                   </>

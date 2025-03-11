@@ -5,4 +5,8 @@ class User < ApplicationRecord
     has_many :clubs, through: :club_members
 
     has_many :owned_clubs, class_name: 'Club', foreign_key: 'owner_id'
+
+    def admin_of?(club)
+        club_members.exists?(club: club, role: 'admin')
+    end
 end

@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_11_023539) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_11_055313) do
   create_table "club_members", force: :cascade do |t|
     t.integer "club_id", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "role", default: "member"
     t.index ["club_id", "user_id"], name: "index_club_members_on_club_id_and_user_id", unique: true
     t.index ["club_id"], name: "index_club_members_on_club_id"
     t.index ["user_id"], name: "index_club_members_on_user_id"

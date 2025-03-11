@@ -4,7 +4,15 @@ Rails.application.routes.draw do
     namespace :v1 do
       post 'logins', to: 'logins#create'
       resources :posts
-      resources :clubs
+      resources :clubs do
+        member do
+          get 'members', to: 'clubs#members'
+          post 'join', to: 'clubs#join'
+          post 'promote_to_admin', to: 'clubs#promote_to_admin'
+          post 'demote_to_member', to: 'clubs#demote_to_member'
+          delete 'leave', to: 'clubs#leave'
+        end
+      end
       resources :users do
         collection do
           delete :destroy_multiple
