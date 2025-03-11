@@ -10,6 +10,7 @@ import Signup from './Signup';
 import Login from './Login';
 import Profile from './Profile';
 import Edit from './Edit';
+import ClubPage from './clubPage';
 import React, { useState, useEffect } from 'react';
 function App() {
   const[isLoggedIn, setIsLoggedIn] = useState(false);
@@ -32,6 +33,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('email')
+    localStorage.removeItem('id');
     setIsLoggedIn(false);
     setUserEmail('');
   };
@@ -75,6 +77,7 @@ function App() {
           <Route path="/login" element={<Login handleLogin={handleLogin} />} />
           <Route path="/profile/:userId" element={<Profile />} />
           <Route path="/profile/edit/:userId" element={<Edit />} />
+          <Route path="/clubPage/:clubId" element={<ClubPage />} />
       </Routes>
     </BrowserRouter>
  
