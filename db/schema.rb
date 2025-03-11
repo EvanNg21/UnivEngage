@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_06_052921) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_11_023539) do
+  create_table "club_members", force: :cascade do |t|
+    t.integer "club_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id", "user_id"], name: "index_club_members_on_club_id_and_user_id", unique: true
+    t.index ["club_id"], name: "index_club_members_on_club_id"
+    t.index ["user_id"], name: "index_club_members_on_user_id"
+  end
+
   create_table "clubs", primary_key: "club_id", force: :cascade do |t|
     t.string "club_name"
     t.integer "members"
@@ -40,4 +50,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_06_052921) do
     t.string "password_digest"
     t.string "username"
   end
+
+  add_foreign_key "club_members", "clubs", primary_key: "club_id"
+  add_foreign_key "club_members", "users", primary_key: "user_id"
 end

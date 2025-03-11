@@ -11,6 +11,7 @@ import Login from './Login';
 import Profile from './Profile';
 import Edit from './Edit';
 import ClubPage from './clubPage';
+import ClubEdit from './ClubEdit';
 import React, { useState, useEffect } from 'react';
 function App() {
   const[isLoggedIn, setIsLoggedIn] = useState(false);
@@ -78,6 +79,7 @@ function App() {
           <Route path="/profile/:userId" element={<Profile />} />
           <Route path="/profile/edit/:userId" element={<Edit />} />
           <Route path="/clubPage/:clubId" element={<ClubPage />} />
+          <Route path="/clubPage/edit/:clubId" element={<ClubEdit />} />
       </Routes>
     </BrowserRouter>
  

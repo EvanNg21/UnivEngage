@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 import Button from 'react-bootstrap/esm/Button';
 function ClubPage(){
-    const {clubId} = useParams();
+    const { clubId } = useParams();
+    const loggedinUser = localStorage.getItem('id');
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isMember, setIsMember] = useState(false);
     const [ownerData, setOwnerData] = useState({
         first_name: '',
         last_name: '',
@@ -13,7 +15,7 @@ function ClubPage(){
         club_id: '',
         club_name: '',
         owner_id: '',
-        members: 0,
+        members: [],
         description: '',
     });
 
@@ -22,9 +24,9 @@ function ClubPage(){
         if (loggedinUser === clubData.owner_id) {
             setIsAdmin(true);
         }
-    }, [clubData.owner_id]);
+    }, [clubData.owner_id, loggedinUser]);
 
-
+    //club data
     useEffect(() => {
         const fetchClubs = async () => {
             try {
@@ -46,6 +48,8 @@ function ClubPage(){
                             members: data.club.members,
                             description: data.club.description
                         });
+                        const isMember = data.club.members.some((member) => member.user_id.toString() === loggedinUser);
+                        setIsMember(isMember);
                     } else {
                         console.error("Unexpected data structure:", data);
                     }
@@ -57,8 +61,9 @@ function ClubPage(){
             }
         };
         fetchClubs();
-    }, [clubId]);
+    }, [clubId, loggedinUser]);
 
+    //owner data
     useEffect(() => {
         const fetchOwner = async () => {
             try {
@@ -85,6 +90,25 @@ function ClubPage(){
         };
         fetchOwner();
     }, [clubData.owner_id]);
+
+    const handleJoin = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}/join`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: loggedinUser })
+            });
+            if (response.ok) {
+                setIsMember(true);
+            } else {
+                console.error("HTTP error: ", response.status);
+            }
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+        }
+    };
     
 
    
@@ -92,13 +116,28 @@ function ClubPage(){
         <div className='base-page'>
             <header className='profile-header'>
                 <h1 className="clubfade">{clubData.club_name}</h1>
+                {isMember ? (
+                  <p> you are a member</p>
+                ):(
+                  <Button onClick={handleJoin} style={{width:'100px'}} variant="primary">Join!</Button> 
+                )}
                 <h2>Club Description: {clubData.description}</h2>
             </header>
             <div className='profile-body'>
                 <p>Club Owner: {ownerData.first_name} {ownerData.last_name}, {ownerData.email}</p>
+                <p>Members:</p>
+                {clubData.members.length > 0 ? (
+                  <ul>
+                    {clubData.members.map((member) => (
+                      <li key={member.user_id}>{member.first_name} {member.last_name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No members found</p>
+                )}
                 {isAdmin ? (
                   <>
-                  <Button variant="primary">Edit</Button>
+                  <Button variant="primary" href={`/clubPage/edit/${clubId}`}>Edit</Button>
                   </>
                 ):(
                   <>

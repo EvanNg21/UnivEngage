@@ -10,7 +10,8 @@ function CreateClub(){
         // Handle form submission here
         const clubData = { 
             club_name: clubName,
-            owner_id: userId
+            owner_id: userId,
+            members:[{user_Id: userId}],
          };
         try{
             const response = await fetch('http://127.0.0.1:3000/api/v1/clubs', {
@@ -32,9 +33,9 @@ function CreateClub(){
         } catch (error){
             console.error('Error creating club', error);
             setMessage('Error creating club');
-        } 
+        }
     };
-
+    
     return(
         <div className='signup-page'>
         <header>
