@@ -158,10 +158,26 @@ function ClubPage(){
                 <h2>Club Description: {clubData.description}</h2>
             </header>
             <div style={{backgroundColor:"white"}}className='profile-body'>
-                posts?
+                {isAdmin || isOwner ? (
+                  <>
+                  <Button variant="primary">New Post</Button>
+                  </>
+                ):(
+                  <>
+                  </>
+                )}
+                Posts?
             </div>
             <div style={{backgroundColor:"grey"}}className='profile-body'>
-                events?
+                {isAdmin || isOwner ? (
+                  <>
+                  <Button variant="primary">New Event</Button>
+                  </>
+                ):(
+                  <>
+                  </>
+                )}
+                Events?
             </div>
             <div className='profile-body'>
                 <p>Members:</p>
