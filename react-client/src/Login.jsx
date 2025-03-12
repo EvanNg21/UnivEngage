@@ -69,7 +69,7 @@ function Login({handleLogin}){
                     </div>
                     {message}
                     <button className="login-button" type="submit">Login</button>
-                    Dont have an account? <a href="/login">Sign Up</a>
+                    Dont have an account? <a href="/signup">Sign Up</a>
                 </div>
             </form>
         </main>
