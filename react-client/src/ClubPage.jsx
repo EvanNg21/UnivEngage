@@ -157,13 +157,20 @@ function ClubPage(){
                 )}
                 <h2>Club Description: {clubData.description}</h2>
             </header>
+            <div style={{backgroundColor:"white"}}className='profile-body'>
+                posts?
+            </div>
+            <div style={{backgroundColor:"grey"}}className='profile-body'>
+                events?
+            </div>
             <div className='profile-body'>
-                <p>Club Owner: {ownerData.first_name} {ownerData.last_name}, {ownerData.email}</p>
                 <p>Members:</p>
                 {clubData.members.length > 0 ? (
                   <ul>
                     {clubData.members.map((member) => (
-                      <li key={member.user_id}>{member.first_name} {member.last_name}, {member.email}</li>
+                      <li key={member.user_id}>{member.first_name} {member.last_name}, {member.email}
+                        {member.user_id == clubData.owner_id && ( 
+                            <>, Club Owner</> )}</li>
                     ))}
                   </ul>
                 ) : (
