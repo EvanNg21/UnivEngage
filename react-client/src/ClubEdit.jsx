@@ -5,9 +5,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 function ClubEdit() {
     const [userEmail, setUserEmail] = useState('');
     const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('id');
+    const [isOwner, setOwner] = useState(false);   
     const { clubId } = useParams();
     const Navigate = useNavigate();
-    const [isAdmin, setAdmin] = useState(false);
     const [clubData, setClubData] = useState({
             club_id: '',
             club_name: '',
@@ -31,6 +32,13 @@ function ClubEdit() {
             setUserEmail(savedEmail);
         }
     }, []);
+
+    useEffect(() => {
+        if (userId == clubData.owner_id) {
+            setOwner(true);
+        }
+    }, []);
+    
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -220,10 +228,12 @@ function ClubEdit() {
                 {memberData.length > 0 ? (
                   <ul>
                     {memberData.map((member) => (
-                      <li key={member.user_id}>{member.first_name} {member.last_name}, {member.email}, {member.user_id}, {member.role} 
+                      <li key={member.user_id}>{member.first_name} {member.last_name}, {member.email}, {member.user_id}, {member.role}
+                      {member.user_id == clubData.owner_id && ( 
+                      <Button variant="warning">owner</Button> )}
                       {member.role !== 'admin' && ( 
                       <Button variant="warning" onClick={() => handlePromote(member.user_id)}>Promote to Admin</Button> )}
-                      {member.role !== 'member' && ( 
+                      {member.role !== 'member' && member.user_id != clubData.owner_id && ( 
                       <Button variant="warning" onClick={() => handleDemote(member.user_id)}>Demote to Member</Button> )}</li>
 
                     ))}
