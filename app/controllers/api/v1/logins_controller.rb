@@ -28,7 +28,7 @@ module Api
 
             def generate_token(user)
                 payload = { user_id: user.id, exp: 24.hours.from_now.to_i }
-                token=JWT.encode(payload, nil, 'none')
+                token=JWT.encode(payload, nil, "none")
                 Rails.logger.info "Token generated for user #{user.id}: #{token}"
                 token
             end
