@@ -10,7 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_04_022948) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_11_055313) do
+  create_table "club_members", force: :cascade do |t|
+    t.integer "club_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "role", default: "member"
+    t.index ["club_id", "user_id"], name: "index_club_members_on_club_id_and_user_id", unique: true
+    t.index ["club_id"], name: "index_club_members_on_club_id"
+    t.index ["user_id"], name: "index_club_members_on_user_id"
+  end
+
+  create_table "clubs", primary_key: "club_id", force: :cascade do |t|
+    t.string "club_name"
+    t.integer "members"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "owner_id"
+  end
+
   create_table "posts", force: :cascade do |t|
     t.string "title"
     t.text "body"
@@ -18,17 +38,20 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_04_022948) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", primary_key: "user_id", force: :cascade do |t|
     t.string "email"
     t.string "password"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "password_digest"
+    t.string "first_name"
+    t.string "last_name"
     t.text "bio"
     t.date "date_of_birth"
     t.string "profile_picture"
-    t.string "first_name"
-    t.string "last_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "password_digest"
     t.string "username"
   end
+
+  add_foreign_key "club_members", "clubs", primary_key: "club_id"
+  add_foreign_key "club_members", "users", primary_key: "user_id"
 end

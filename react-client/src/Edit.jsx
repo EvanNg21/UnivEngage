@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
 import Button from 'react-bootstrap/esm/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 function Edit() {
     const [userEmail, setUserEmail] = useState('');
     const token = localStorage.getItem('token');
-    const userID = localStorage.getItem('id');
+    const { userId } = useParams();
     const Navigate = useNavigate();
     const [userData, setUserData] = useState({
         username: '',
@@ -34,7 +34,7 @@ function Edit() {
             }
 
             try {
-                const response = await fetch(`http://127.0.0.1:3000/api/v1/users/${userID}`, {
+                const response = await fetch(`http://127.0.0.1:3000/api/v1/users/${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ function Edit() {
             }
         };
         fetchUserData();
-    }, [userID]);
+    }, [userId]);
 
     const handleInputChange = (event) => {
         const { name, value} = event.target;
@@ -73,7 +73,7 @@ function Edit() {
         event.preventDefault();
         // Perform form submission logic here
         try{
-            const response = await fetch(`http://127.0.0.1:3000/api/v1/users/${userID}`,{
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/users/${userId}`,{
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ function Edit() {
             });
             if (response.ok){
                 console.log('User data changed succesfully');
-                Navigate("/profile");
+                Navigate(`/profile/${userId}`);
             } else{
                 console.error('Failed to update user data');
             }
@@ -95,7 +95,7 @@ function Edit() {
     
 
     return (
-        <div className='profile-page'>
+        <div className='base-page'>
             <header className='profile-header'>
                 <h1 className="clubfade">My Profile</h1>
                 <h2 style={{ paddingLeft: '100px', paddingTop: '50px' }}>Bio: <input style={{color: 'white'}} type="text" name= "bio" placeholder="bio" value={userData.bio} onChange={handleInputChange}/></h2>

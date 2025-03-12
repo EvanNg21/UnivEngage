@@ -4,6 +4,8 @@ function Signup(){
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -24,7 +26,9 @@ function Signup(){
         const userData = {
             user:{
                 email: email,
-                password: password
+                password: password,
+                first_name: firstName,
+                last_name: lastName
             }
         };
 
@@ -42,6 +46,8 @@ function Signup(){
                 setEmail('');
                 setPassword('');
                 setConfirmPassword('');
+                setFirstName('');
+                setLastName('');
                 console.log('success', data);
                 setMessage("signup successful");
 
@@ -64,6 +70,16 @@ function Signup(){
         </header>
         <main>
             <form onSubmit={handleSubmit}>
+                <div className="signup-container">
+                    <div className="signup-bar">
+                        <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required/>
+                    </div>
+                </div>
+                <div className="signup-container">
+                    <div className="signup-bar">
+                        <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required/>
+                    </div>
+                </div>
                 <div className="signup-container">
                     <div className="signup-bar">
                         <input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>

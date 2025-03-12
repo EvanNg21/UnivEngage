@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, Navigate, useNavigate} from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate, useParams} from 'react-router-dom';
 import './App.css';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -10,6 +10,8 @@ import Signup from './Signup';
 import Login from './Login';
 import Profile from './Profile';
 import Edit from './Edit';
+import ClubPage from './clubPage';
+import ClubEdit from './ClubEdit';
 import React, { useState, useEffect } from 'react';
 function App() {
   const[isLoggedIn, setIsLoggedIn] = useState(false);
@@ -32,6 +34,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('email')
+    localStorage.removeItem('id');
     setIsLoggedIn(false);
     setUserEmail('');
   };
@@ -52,7 +55,7 @@ function App() {
                 <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
                 {isLoggedIn ? (
                   <>
-                  <Nav.Link style={{color:'black'}} href="/profile">{userEmail}</Nav.Link>
+                  <Nav.Link style={{color:'black'}} href={`/profile/${userId}`}>{userEmail}</Nav.Link>
                   <Nav.Link style={{color:'black'}} href="/login" onClick={handleLogout}>Logout</Nav.Link>
                   </>
                 ):(
@@ -73,9 +76,11 @@ function App() {
           <Route path="/create" element={<CreateClub />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login handleLogin={handleLogin} />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="profile/edit" element={<Edit />} />
-        </Routes>
+          <Route path="/profile/:userId" element={<Profile />} />
+          <Route path="/profile/edit/:userId" element={<Edit />} />
+          <Route path="/clubPage/:clubId" element={<ClubPage />} />
+          <Route path="/clubPage/edit/:clubId" element={<ClubEdit />} />
+      </Routes>
     </BrowserRouter>
  
   );
