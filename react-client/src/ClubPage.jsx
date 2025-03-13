@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 import Button from 'react-bootstrap/esm/Button';
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
 function ClubPage(){
     const { clubId } = useParams();
     const loggedinUser = localStorage.getItem('id');
@@ -21,6 +23,15 @@ function ClubPage(){
         members: [],
         description: '',
     });
+
+    const [showEventModal, setShowEventModal] = useState(false);
+    const [eventName, setEventName] = useState('');
+    const [eventDescription, setEventDescription] = useState('');
+    const [eventDate, setEventDate] = useState('');
+
+    const handleCloseEventModal = () => setShowEventModal(false);
+    const handleShowEventModal = () => setShowEventModal(true);
+
 
     useEffect(() => {
         const loggedinUser = localStorage.getItem('id');
@@ -67,7 +78,6 @@ function ClubPage(){
     }, [clubId, loggedinUser]);
 
     //owner data
-    
     useEffect(() => {
         const fetchOwner = async () => {
             try {
@@ -95,7 +105,7 @@ function ClubPage(){
         fetchOwner();
     }, [clubData.owner_id]);
     
-
+//join club
     const handleJoin = async () => {
         try {
             const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}/join`, {
@@ -115,6 +125,7 @@ function ClubPage(){
         }
     };
     
+    //member data and check admin
     useEffect(() => {
         const fetchAdmin = async () =>{
             const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
@@ -171,7 +182,7 @@ function ClubPage(){
             <div style={{backgroundColor:"grey"}}className='profile-body'>
                 {isAdmin || isOwner ? (
                   <>
-                  <Button variant="primary">New Event</Button>
+                  <Button variant="primary" onClick={handleShowEventModal}>New Event</Button>
                   </>
                 ):(
                   <>
@@ -201,6 +212,44 @@ function ClubPage(){
                   </>
                 )}
             </div>
+            {/* Event pop out input */}
+            <Modal show={showEventModal} onHide={handleCloseEventModal}>
+                <Modal.Header>
+                    <Modal.Title>Create Event</Modal.Title>
+                </Modal.Header>
+                <Modal.Body style={{backgroundColor: 'lightgrey'}}>
+                    <Form>
+                        <Form.Group>
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control type="text" placeholder="Enter title" required />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control as="textarea" placeholder="Enter description" required/>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Date</Form.Label>
+                            <Form.Control type="date" required/>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Time</Form.Label>
+                            <Form.Control type="time" />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Location</Form.Label>
+                            <Form.Control type="text" placeholder="Enter location" />
+                        </Form.Group>
+                        <Button style={{width:'100px', justifyContent:'center', alignItems:'center', display:'flex', margin:'auto', marginTop:'10px'}} variant="primary" type="submit">
+                            Create
+                        </Button>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="danger" onClick={handleCloseEventModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
