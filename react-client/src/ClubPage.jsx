@@ -11,11 +11,8 @@ function ClubPage(){
     const [isOwner, setIsOwner] = useState(false);
     const [isMember, setIsMember] = useState(false);
     const [memberData, setMemberData] = useState([]);
-    const [ownerData, setOwnerData] = useState({
-        first_name: '',
-        last_name: '',
-        email: '', 
-    });
+    const [eventDisplay,setEventDisplay] = useState([]);
+    
     const [clubData, setClubData] = useState({
         club_id: '',
         club_name: '',
@@ -24,13 +21,20 @@ function ClubPage(){
         description: '',
     });
 
-    const [showEventModal, setShowEventModal] = useState(false);
-    const [eventName, setEventName] = useState('');
-    const [eventDescription, setEventDescription] = useState('');
-    const [eventDate, setEventDate] = useState('');
+    const [eventData, setEventData] = useState({
+        event_id: '',
+        event_name: '',
+        description: '',
+        event_date: '',
+        start_time: '',
+        end_time: '',
+        location: '',
+    });
 
+    const [showEventModal, setShowEventModal] = useState(false);
     const handleCloseEventModal = () => setShowEventModal(false);
     const handleShowEventModal = () => setShowEventModal(true);
+    const [eventMessage, setEventMessage] = useState('');
 
 
     useEffect(() => {
@@ -77,34 +81,6 @@ function ClubPage(){
         fetchClubs();
     }, [clubId, loggedinUser]);
 
-    //owner data
-    useEffect(() => {
-        const fetchOwner = async () => {
-            try {
-                const response = await fetch(`http://127.0.0.1:3000/api/v1/users/${clubData.owner_id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Fetched data:", data);
-                    setOwnerData({
-                        first_name: data.user.first_name,
-                        last_name: data.user.last_name,
-                        email: data.user.email  
-                    });
-                } else {
-                    console.error("HTTP error: ", response.status);
-                }
-            } catch (e) {
-                console.log("An error has occurred: ", e);
-            }
-        };
-        fetchOwner();
-    }, [clubData.owner_id]);
-    
 //join club
     const handleJoin = async () => {
         try {
@@ -144,7 +120,6 @@ function ClubPage(){
                     const data = await response.json();
                     console.log('Member Data:', data); // Debugging
                     setMemberData(data.members);
-
                     const userIsAdmin = data.members.some(member => member.user_id.toString() === loggedinUser && member.role === 'admin');
                     setIsAdmin(userIsAdmin);
                 } else {
@@ -156,6 +131,79 @@ function ClubPage(){
         };
         fetchAdmin();
     }, [clubId, loggedinUser]);
+
+    const handleEventSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/events`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    event_name: eventData.event_name,
+                    description: eventData.description,
+                    event_date: eventData.event_date,
+                    start_time: eventData.start_time,
+                    end_time: eventData.end_time,
+                    location: eventData.location,
+                    club_id: clubId
+                })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setEventData({
+                    event_id: '',
+                    event_name: '',
+                    description: '',
+                    event_date: '',
+                    start_time: '',
+                    end_time: '',
+                    location: ''
+                })
+                console.log("Event created successfully", data);
+                handleCloseEventModal();
+                alert("Event created successfully");
+            } else {
+                console.error("HTTP error: ", response.status);
+                setEventMessage("Failed to create event"); 
+            }
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+            setEventMessage("Failed to create event"); 
+
+        }
+    }
+
+    useEffect(() => {
+        const fetchEvents = async () =>{
+            const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+            if (!token) {
+                console.error('Token not found');
+                return;
+            }
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/api/v1/events`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Event Data:', data); // Debugging
+                    const filterEvents = data.events.filter(event => event.club_id === parseInt(clubId));
+                    setEventDisplay(filterEvents);
+                } else {
+                    console.error('Failed to fetch event data');
+                }
+            } catch (error) {
+                console.error('Error fetching event data:', error);
+            }
+        };
+        fetchEvents();
+    }, []);
+    
    
     return (
         <div className='base-page'>
@@ -180,6 +228,22 @@ function ClubPage(){
                 Posts?
             </div>
             <div style={{backgroundColor:"grey"}}className='profile-body'>
+                <h1>Events</h1>
+                {eventDisplay.length > 0 ? (
+                    <ul>
+                        {eventDisplay.map((event) => (
+                            <li key={event.event_id}>
+                                <h3>{event.event_name}</h3>
+                                <p>{event.description}</p>
+                                <p>Date: {event.event_date}</p>
+                                <p>Time: {event.start_time} - {event.end_time}</p>
+                                <p>Location: {event.location}</p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No events found</p>
+                )}
                 {isAdmin || isOwner ? (
                   <>
                   <Button variant="primary" onClick={handleShowEventModal}>New Event</Button>
@@ -188,7 +252,6 @@ function ClubPage(){
                   <>
                   </>
                 )}
-                Events?
             </div>
             <div className='profile-body'>
                 <p>Members:</p>
@@ -218,27 +281,32 @@ function ClubPage(){
                     <Modal.Title>Create Event</Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{backgroundColor: 'lightgrey'}}>
-                    <Form>
+                    <Form onSubmit={handleEventSubmit}>
                         <Form.Group>
                             <Form.Label>Title</Form.Label>
-                            <Form.Control type="text" placeholder="Enter title" required />
+                            <Form.Control type="text" placeholder="Enter title" required value={eventData.event_name} onChange={(e) => setEventData({...eventData, event_name: e.target.value})} />
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Description</Form.Label>
-                            <Form.Control as="textarea" placeholder="Enter description" required/>
+                            <Form.Control as="textarea" placeholder="Enter description" required value={eventData.description} onChange={(e) => setEventData({...eventData, description: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Date</Form.Label>
-                            <Form.Control type="date" required/>
+                            <Form.Control type="date" required value={eventData.event_date} onChange={(e) => setEventData({...eventData, event_date: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>Time</Form.Label>
-                            <Form.Control type="time" />
+                            <Form.Label>Start Time</Form.Label>
+                            <Form.Control type="time" value={eventData.start_time} onChange={(e) => setEventData({...eventData, start_time: e.target.value})}/>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>End Time</Form.Label>
+                            <Form.Control type="time" value={eventData.end_time} onChange={(e) => setEventData({...eventData, end_time: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Location</Form.Label>
-                            <Form.Control type="text" placeholder="Enter location" />
+                            <Form.Control type="text" placeholder="Enter location" value={eventData.location} onChange={(e) => setEventData({...eventData, location: e.target.value})}/>
                         </Form.Group>
+                        <p>{eventMessage}</p>
                         <Button style={{width:'100px', justifyContent:'center', alignItems:'center', display:'flex', margin:'auto', marginTop:'10px'}} variant="primary" type="submit">
                             Create
                         </Button>

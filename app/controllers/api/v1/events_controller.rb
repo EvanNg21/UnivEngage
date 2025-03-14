@@ -1,7 +1,7 @@
 module Api
     module V1
         class EventsController < ApplicationController
-            skip_before_action :authenticate_user!, only: [:index, :create, :show]
+            skip_before_action :authenticate_user!, only: [:index, :create, :show, :destroy]
             before_action :set_event, only: [:show, :edit, :update, :destroy]
 
             def index
@@ -10,6 +10,7 @@ module Api
             end
 
             def show
+                render json: { status: "SUCCESS", events: @event }, status: :ok
             end
 
             def new
