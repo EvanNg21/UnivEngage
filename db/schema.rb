@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_12_072239) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_16_093234) do
   create_table "club_members", force: :cascade do |t|
     t.integer "club_id", null: false
     t.integer "user_id", null: false
@@ -44,11 +44,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_12_072239) do
     t.index ["club_id"], name: "index_events_on_club_id"
   end
 
-  create_table "posts", force: :cascade do |t|
-    t.string "title"
-    t.text "body"
+  create_table "posts", primary_key: "post_id", force: :cascade do |t|
+    t.string "post_name"
+    t.text "content", null: false
+    t.integer "views_count"
+    t.integer "likes_count"
+    t.integer "comments_count"
+    t.string "image"
+    t.integer "club_id", null: false
+    t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_posts_on_club_id"
+    t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
   create_table "users", primary_key: "user_id", force: :cascade do |t|
@@ -68,4 +76,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_12_072239) do
   add_foreign_key "club_members", "clubs", primary_key: "club_id"
   add_foreign_key "club_members", "users", primary_key: "user_id"
   add_foreign_key "events", "clubs", primary_key: "club_id"
+  add_foreign_key "posts", "clubs", primary_key: "club_id"
+  add_foreign_key "posts", "users", primary_key: "user_id"
 end

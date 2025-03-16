@@ -1,52 +1,65 @@
-class Api::V1::PostsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [ :index, :show ]
-  before_action :set_post, only: %i[ show update destroy ]
+module Api
+  module V1
+      class PostsController < ApplicationController
+          skip_before_action :authenticate_user!, only: [:index, :create, :show, :destroy]
+          before_action :set_post, only: [:show, :edit, :update, :destroy]
 
-  # GET /posts
-  def index
-    @posts = Post.order(created_at: :desc)
+          def index
+              @posts = Post.all
+              render json: { status: "SUCCESS", posts: @posts }, status: :ok
+          end
 
-    render json: @posts
+          def show
+              render json: { status: "SUCCESS", posts: @posts }, status: :ok
+          end
+
+          def new
+              @posts = Post.new
+          end
+
+          def create
+              @posts = Post.new(post_params)
+              if @posts.save
+                  render json: {status: "SUCCESS", posts: @posts }, status: :created
+              else
+                  render json: {status: "ERROR", posts: @posts.errors }, status: :unprocessable_entity
+              end
+          end
+
+          def edit
+          end
+
+          def update
+              if @posts.update(post_params)
+                  render json: {status: "SUCCESS", posts: @posts }, status: :ok
+              else
+                  render json: {status: "ERROR", posts: @posts.errors }, status: :unprocessable_entity
+              end
+          end
+
+          def destroy
+              if @posts.destroy
+                  render json: {status: "SUCCESS", posts: @posts }, status: :ok
+              else
+                  render json: {status: "ERROR", posts: @posts.errors }, status: :unprocessable_entity
+              end
+          end
+
+          private
+
+          def set_Post
+              @posts = Post.find(params[:id])
+          rescue ActiveRecord::RecordNotFound
+              render json: { status: "ERROR", message: "Post not found" }, status: :not_found
+          end
+
+          def post_params
+              params.require(:post).permit(:post_id,:post_name, :content, :user_id, :club_id, :views_count, :likes_count, :comments_count, :image)
+          end
+      end 
   end
-
-  # GET /posts/1
-  def show
-    render json: @post
-  end
-
-  # POST /posts
-  def create
-    @post = Post.new(post_params)
-
-    if @post.save
-      render json: @post, status: :created, location: api_v1_post_url(@post)
-    else
-      render json: @post.errors, status: :unprocessable_entity
-    end
-  end
-
-  # PATCH/PUT /posts/1
-  def update
-    if @post.update(post_params)
-      render json: @post
-    else
-      render json: @post.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /posts/1
-  def destroy
-    @post.destroy!
-  end
-
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_post
-      @post = Post.find(params[:id])
-    end
-
-    # Only allow a list of trusted parameters through.
-    def post_params
-      params.require(:post).permit(:title, :body)
-    end
 end
+         
+
+
+

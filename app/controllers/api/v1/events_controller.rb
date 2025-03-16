@@ -22,7 +22,7 @@ module Api
                 if @event.save
                     render json: {status: "SUCCESS", events: @event }, status: :created
                 else
-                    render json: {status: "ERROR", events: @event.erros }, status: :unprocessable_entity
+                    render json: {status: "ERROR", events: @event.errors }, status: :unprocessable_entity
                 end
             end
 

@@ -11,7 +11,6 @@ function ClubPage(){
     const [isOwner, setIsOwner] = useState(false);
     const [isMember, setIsMember] = useState(false);
     const [memberData, setMemberData] = useState([]);
-    const [eventDisplay,setEventDisplay] = useState([]);
     
     const [clubData, setClubData] = useState({
         club_id: '',
@@ -31,10 +30,28 @@ function ClubPage(){
         location: '',
     });
 
+    const [postData, setPostData] = useState({
+        post_id: '',
+        post_name: '',
+        content: '',
+        user_id: '',
+        club_id: '',
+        views_count: '',
+        likes_count: '',
+        comments_count: '',
+    });
+
+    const [eventDisplay,setEventDisplay] = useState([]);
     const [showEventModal, setShowEventModal] = useState(false);
     const handleCloseEventModal = () => setShowEventModal(false);
     const handleShowEventModal = () => setShowEventModal(true);
     const [eventMessage, setEventMessage] = useState('');
+
+    const [postDisplay,setPostDisplay] = useState([]);
+    const [showPostModal, setShowPostModal] = useState(false);
+    const handleClosePostModal = () => setShowPostModal(false);
+    const handleShowPostModal = () => setShowPostModal(true);
+    const [postMessage, setPostMessage] = useState('');
 
 
     useEffect(() => {
@@ -132,6 +149,7 @@ function ClubPage(){
         fetchAdmin();
     }, [clubId, loggedinUser]);
 
+    //create event
     const handleEventSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -141,6 +159,7 @@ function ClubPage(){
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    event_id: eventData.event_id,
                     event_name: eventData.event_name,
                     description: eventData.description,
                     event_date: eventData.event_date,
@@ -175,6 +194,53 @@ function ClubPage(){
         }
     }
 
+    //create post
+    const handlePostSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/posts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    post_id: postData.post_id,
+                    post_name: postData.post_name,
+                    content: postData.content,
+                    views_count: postData.views_count,
+                    likes_count: postData.likes_count,
+                    comments_count: postData.comments_count,
+                    user_id: loggedinUser,
+                    club_id: clubId
+                })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setPostData({
+                    post_id: '',
+                    post_name: '',
+                    content: '',
+                    user_id: '',
+                    club_id: '',
+                    views_count: '',
+                    likes_count: '',
+                    comments_count: ''
+                })
+                console.log("Post created successfully", data);
+                handleClosePostModal();
+                alert("Post post successfully");
+            } else {
+                console.error("HTTP error: ", response.status);
+                setPostMessage("Failed to create Post"); 
+            }
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+            setPostMessage("Failed to create Post"); 
+
+        }
+    }
+
+    //get event data
     useEffect(() => {
         const fetchEvents = async () =>{
             const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
@@ -203,6 +269,36 @@ function ClubPage(){
         };
         fetchEvents();
     }, []);
+
+    //get post data
+    useEffect(() => {
+        const fetchPosts = async () =>{
+            const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+            if (!token) {
+                console.error('Token not found');
+                return;
+            }
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/api/v1/posts`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Posts Data:', data); // Debugging
+                    const filterEvents = data.posts.filter(post => post.club_id === parseInt(clubId));
+                    setPostDisplay(filterEvents);
+                } else {
+                    console.error('Failed to fetch post data');
+                }
+            } catch (error) {
+                console.error('Error fetching post data:', error);
+            }
+        };
+        fetchPosts();
+    }, []);
     
    
     return (
@@ -216,16 +312,30 @@ function ClubPage(){
                 )}
                 <h2>Club Description: {clubData.description}</h2>
             </header>
-            <div style={{backgroundColor:"white"}}className='profile-body'>
+            <div style={{backgroundColor:"lightgrey"}}className='profile-body'>
+                <h1>Posts</h1>
+                {postDisplay.length > 0 ? (
+                    <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none' }}>
+                        {postDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                        .map((post) => (
+                            <li key={post.post_id} style={{ margin: '10px', flex: '0 0 30%', backgroundColor: 'white', padding: '10px', borderRadius: '5px' }}>
+                                <h3>{post.post_name}</h3>
+                                <p>{post.content}</p>
+                                <p>{Date(post.created_at)}</p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No posts found</p>
+                )}
                 {isAdmin || isOwner ? (
                   <>
-                  <Button variant="primary">New Post</Button>
+                  <Button variant="primary" onClick={handleShowPostModal}>New Post</Button>
                   </>
                 ):(
                   <>
                   </>
                 )}
-                Posts?
             </div>
             <div style={{backgroundColor:"grey", maxHeight: "100vh"}}className='profile-body'>
                 <h1>Events</h1>
@@ -284,15 +394,15 @@ function ClubPage(){
                 <Modal.Body style={{backgroundColor: 'lightgrey'}}>
                     <Form onSubmit={handleEventSubmit}>
                         <Form.Group>
-                            <Form.Label>Title</Form.Label>
+                            <Form.Label>*Title</Form.Label>
                             <Form.Control type="text" placeholder="Enter title" required value={eventData.event_name} onChange={(e) => setEventData({...eventData, event_name: e.target.value})} />
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>Description</Form.Label>
+                            <Form.Label>*Description</Form.Label>
                             <Form.Control as="textarea" placeholder="Enter description" required value={eventData.description} onChange={(e) => setEventData({...eventData, description: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>Date</Form.Label>
+                            <Form.Label>*Date</Form.Label>
                             <Form.Control type="date" required value={eventData.event_date} onChange={(e) => setEventData({...eventData, event_date: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
@@ -304,7 +414,7 @@ function ClubPage(){
                             <Form.Control type="time" value={eventData.end_time} onChange={(e) => setEventData({...eventData, end_time: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>Location</Form.Label>
+                            <Form.Label>*Location</Form.Label>
                             <Form.Control type="text" placeholder="Enter location" value={eventData.location} onChange={(e) => setEventData({...eventData, location: e.target.value})}/>
                         </Form.Group>
                         <p>{eventMessage}</p>
@@ -319,7 +429,42 @@ function ClubPage(){
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+
+            {/* Posts pop out input */}
+            <Modal show={showPostModal} onHide={handleClosePostModal}>
+                <Modal.Header>
+                    <Modal.Title>Create Post</Modal.Title>
+                </Modal.Header>
+                <Modal.Body style={{backgroundColor: 'lightgrey'}}>
+                    <Form onSubmit={handlePostSubmit}>
+                        <Form.Group>
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control type="text" placeholder="Enter title" value={postData.post_name} onChange={(e) => setPostData({...postData, post_name: e.target.value})} />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>*Content</Form.Label>
+                            <Form.Control as="textarea" placeholder="Enter content" required value={postData.description} onChange={(e) => setPostData({...postData, content: e.target.value})}/>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Image</Form.Label>
+                            <Form.Control as="textarea" placeholder="image (WIP)"/>
+                        </Form.Group>
+                        <p>{postMessage}</p>
+                        <Button style={{width:'100px', justifyContent:'center', alignItems:'center', display:'flex', margin:'auto', marginTop:'10px'}} variant="primary" type="submit">
+                            Create
+                        </Button>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="danger" onClick={handleClosePostModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
+
+        
     );
 }
 
