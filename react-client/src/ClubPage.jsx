@@ -41,6 +41,8 @@ function ClubPage(){
         comments_count: '',
     });
 
+    const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+
     const [eventDisplay,setEventDisplay] = useState([]);
     const [showEventModal, setShowEventModal] = useState(false);
     const handleCloseEventModal = () => setShowEventModal(false);
@@ -321,7 +323,7 @@ function ClubPage(){
                             <li key={post.post_id} style={{ margin: '10px', flex: '0 0 30%', backgroundColor: 'white', padding: '10px', borderRadius: '5px' }}>
                                 <h3>{post.post_name}</h3>
                                 <p>{post.content}</p>
-                                <p>{Date(post.created_at)}</p>
+                                <p>{new Date(post.created_at).toLocaleDateString('en-US', dateOptions)}</p>
                             </li>
                         ))}
                     </ul>
@@ -346,8 +348,8 @@ function ClubPage(){
                             <li key={event.event_id} style={{ margin: '10px', flex: '0 0 30%', backgroundColor: 'white', padding: '10px', borderRadius: '5px' }}>
                                 <h3>{event.event_name}</h3>
                                 <p>{event.description}</p>
-                                <p>Date: {event.event_date}</p>
-                                <p>Time: {event.start_time} - {event.end_time}</p>
+                                <p>Date: {new Date(event.event_date).toLocaleDateString('en-US', dateOptions)}</p>
+                                <p>Time: {new Date(event.start_time).toLocaleDateString('en-US', dateOptions)} - {new Date(event.end_time).toLocaleDateString('en-US', dateOptions)}</p>
                                 <p>Location: {event.location}</p>
                             </li>
                         ))}
