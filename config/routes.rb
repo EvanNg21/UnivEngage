@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       post 'logins', to: 'logins#create'
       resources :posts
+      resources :events
       resources :clubs do
         member do
           get 'members', to: 'clubs#members'
