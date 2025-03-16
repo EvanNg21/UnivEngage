@@ -227,12 +227,13 @@ function ClubPage(){
                 )}
                 Posts?
             </div>
-            <div style={{backgroundColor:"grey"}}className='profile-body'>
+            <div style={{backgroundColor:"grey", maxHeight: "100vh"}}className='profile-body'>
                 <h1>Events</h1>
                 {eventDisplay.length > 0 ? (
-                    <ul>
-                        {eventDisplay.map((event) => (
-                            <li key={event.event_id}>
+                    <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none' }}>
+                        {eventDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                        .map((event) => (
+                            <li key={event.event_id} style={{ margin: '10px', flex: '0 0 30%', backgroundColor: 'white', padding: '10px', borderRadius: '5px' }}>
                                 <h3>{event.event_name}</h3>
                                 <p>{event.description}</p>
                                 <p>Date: {event.event_date}</p>
