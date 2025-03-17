@@ -10,7 +10,7 @@ import Signup from './Signup';
 import Login from './Login';
 import Profile from './Profile';
 import Edit from './Edit';
-import ClubPage from './clubPage';
+import ClubPage from './ClubPage';
 import ClubEdit from './ClubEdit';
 import React, { useState, useEffect } from 'react';
 function App() {
