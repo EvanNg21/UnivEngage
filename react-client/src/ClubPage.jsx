@@ -55,6 +55,33 @@ function ClubPage(){
     const handleShowPostModal = () => setShowPostModal(true);
     const [postMessage, setPostMessage] = useState('');
 
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [showEventInfo, setShowEventInfo] = useState(false);
+    const closeEventInfo = () => setShowEventInfo(false);
+
+    const handleShowEventInfo = (event) => {
+        setSelectedEvent(event);
+        setShowEventInfo(true);
+    };
+
+    const [isEditMode, setEditMode] = useState(false);
+    const handleEditClick = () => {
+        setEditMode(true);
+    };
+
+    const [selectedPost, setSelectedPost] = useState(null);
+    const [showPostInfo, setShowPostInfo] = useState(false);
+    const closePostInfo = () => setShowPostInfo(false);
+
+    const handleShowPostInfo = (post) => {
+        setSelectedPost(post);
+        setShowPostInfo(true);
+    };
+
+    const [isEditPostMode, setEditPostMode] = useState(false);
+    const handleEditPostClick = () => {
+        setEditPostMode(true);
+    };
 
     useEffect(() => {
         const loggedinUser = localStorage.getItem('id');
@@ -301,6 +328,75 @@ function ClubPage(){
         };
         fetchPosts();
     }, []);
+
+    const handleSaveEdit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/events/${selectedEvent.event_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    event: {
+                        event_name: selectedEvent.event_name,
+                        description: selectedEvent.description,
+                        event_date: selectedEvent.event_date,
+                        start_time: selectedEvent.start_time,
+                        end_time: selectedEvent.end_time,
+                        location: selectedEvent.location,
+                        club_id: selectedEvent.club_id
+                    }
+                })
+            });
+            if (response.ok) {
+                const updatedEvent = await response.json();
+                console.log("Event updated successfully", updatedEvent);
+                alert("Event updated successfully");
+                setEventDisplay((prevEvents) => prevEvents.map(event => event.event_id === updatedEvent.event_id ? updatedEvent : event));
+                setEditMode(false);
+                closeEventInfo();
+            } else {
+                console.error("HTTP error: ", response.status);
+                alert("Failed to update event");
+            }
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+            alert("error updating event");
+        }
+    };
+
+    const handleSavePostEdit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/posts/${selectedPost.post_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    post: {
+                        post_name: selectedPost.post_name,
+                        content: selectedPost.content
+                    }
+                })
+            });
+            if (response.ok) {
+                const updatedPost = await response.json();
+                console.log("Post updated successfully", updatedPost);
+                alert("Post updated successfully");
+                setPostDisplay((prevPosts) => prevPosts.map(post => post.post_id === updatedPost.post_id ? updatedPost : post));
+                setEditPostMode(false);
+                closePostInfo();
+            } else {
+                console.error("HTTP error: ", response.status);
+                alert("Failed to update post");
+            }
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+            alert("error updating post");
+        }
+    };
     
    
     return (
@@ -320,8 +416,10 @@ function ClubPage(){
                     <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none' }}>
                         {postDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map((post) => (
-                            <li key={post.post_id} style={{ margin: '10px', flex: '0 0 30%', backgroundColor: 'white', padding: '10px', borderRadius: '5px' }}>
-                                <h3>{post.post_name}</h3>
+                            <li key={post.post_id} style={{ margin: '10px', flex: '0 0 30%', backgroundColor: 'white', padding: '10px', borderRadius: '5px', width: '300px' }}>
+                                <button style={{borderRadius:"10px", width:"100%"}} onClick={() => handleShowPostInfo(post)}>
+                                    <h3>{post.post_name}</h3>
+                                </button>
                                 <p>{post.content}</p>
                                 <p>{new Date(post.created_at).toLocaleDateString('en-US', dateOptions)}</p>
                             </li>
@@ -346,7 +444,9 @@ function ClubPage(){
                         {eventDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map((event) => (
                             <li key={event.event_id} style={{ margin: '10px', flex: '0 0 30%', backgroundColor: 'white', padding: '10px', borderRadius: '5px' }}>
-                                <h3>{event.event_name}</h3>
+                                <button style={{borderRadius:"10px", width:"100%"}} onClick={() => handleShowEventInfo(event)}>
+                                    <h3>{event.event_name}</h3>
+                                </button>
                                 <p>{event.description}</p>
                                 <p>Date: {new Date(event.event_date).toLocaleDateString('en-US', dateOptions)}</p>
                                 <p>Time: {new Date(event.start_time).toLocaleDateString('en-US', dateOptions)} - {new Date(event.end_time).toLocaleDateString('en-US', dateOptions)}</p>
@@ -464,6 +564,125 @@ function ClubPage(){
                     </Button>
                 </Modal.Footer>
             </Modal>
+            
+            {/* Event info pop out input */}
+            <Modal show={showEventInfo} onHide={closeEventInfo}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Event Information</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedEvent && (
+                        isEditMode ? (
+                            <Form>
+                                <Form.Group>
+                                    <Form.Label>Event Name</Form.Label>
+                                    <Form.Control type="text" value={selectedEvent.event_name} onChange={(e) => setSelectedEvent({...selectedEvent, event_name: e.target.value})} />
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Description</Form.Label>
+                                    <Form.Control as="textarea" value={selectedEvent.description} onChange={(e) => setSelectedEvent({...selectedEvent, description: e.target.value})} />
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Date</Form.Label>
+                                    <Form.Control type="date" value={selectedEvent.event_date} onChange={(e) => setSelectedEvent({...selectedEvent, event_date: e.target.value})} />
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Start Time</Form.Label>
+                                    <Form.Control type="time" value={selectedEvent.start_time} onChange={(e) => setSelectedEvent({...selectedEvent, start_time: e.target.value})} />
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>End Time</Form.Label>
+                                    <Form.Control type="time" value={selectedEvent.end_time} onChange={(e) => setSelectedEvent({...selectedEvent, end_time: e.target.value})} />
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Location</Form.Label>
+                                    <Form.Control type="text" value={selectedEvent.location} onChange={(e) => setSelectedEvent({...selectedEvent, location: e.target.value})} />
+                                </Form.Group>
+                            </Form>
+                        ) : (
+                            <>
+                                <h3>{selectedEvent.event_name}</h3>
+                                <p>{selectedEvent.description}</p>
+                                <p>Date: {new Date(selectedEvent.event_date).toLocaleDateString('en-US', dateOptions)}</p>
+                                <p>Time: {new Date(selectedEvent.start_time).toLocaleTimeString('en-US', dateOptions)} - {new Date(selectedEvent.end_time).toLocaleTimeString('en-US', dateOptions)}</p>
+                                <p>Location: {selectedEvent.location}</p>
+                            </>
+                        )
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    {isAdmin || isOwner ? (
+                        <>
+                            {isEditMode ? (
+                                <Button variant="success" onClick={handleSaveEdit} >
+                                    Save
+                                </Button>
+                            ) : (
+                                <Button variant="primary" onClick={handleEditClick}>
+                                    Edit
+                                </Button>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                        </>
+                    )}
+                    <Button variant="danger" onClick={closeEventInfo}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Post info pop out input */}
+            <Modal show={showPostInfo} onHide={closePostInfo}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Post Information</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedPost && (
+                        isEditPostMode ? (
+                            <Form>
+                                <Form.Group>
+                                    <Form.Label>Post Name</Form.Label>
+                                    <Form.Control type="text" value={selectedPost.post_name} onChange={(e) => setSelectedPost({...selectedPost, post_name: e.target.value})} />
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Content</Form.Label>
+                                    <Form.Control type="text" value={selectedPost.content} onChange={(e) => setSelectedPost({...selectedPost, content: e.target.value})} />
+                                </Form.Group>
+                            </Form>
+                        ) : (
+                            <>
+                                <h3>{selectedPost.post_name}</h3>
+                                <p>{selectedPost.content}</p>
+                                <p>{new Date(selectedPost.created_at).toLocaleDateString('en-US', dateOptions)}</p>
+                            </>
+                        )
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    {isAdmin || isOwner ? (
+                        <>
+                            {isEditPostMode ? (
+                                <Button variant="success" onClick={handleSavePostEdit} >
+                                    Save
+                                </Button>
+                            ) : (
+                                <Button variant="primary" onClick={handleEditPostClick}>
+                                    Edit
+                                </Button>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                        </>
+                    )}
+                    <Button variant="danger" onClick={closePostInfo}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
         </div>
 
         
