@@ -1,7 +1,7 @@
 module Api
     module V1
         class EventsController < ApplicationController
-            skip_before_action :authenticate_user!, only: [:index, :create, :show, :destroy, :update]
+            skip_before_action :authenticate_user!, only: [:index, :create, :show, :destroy, :update, :attend, :unattend, :attending]
             before_action :set_event, only: [:show, :edit, :update, :destroy]
 
             def index
@@ -43,6 +43,35 @@ module Api
                 else
                     render json: {status: "ERROR", events: @event.errors }, status: :unprocessable_entity
                 end
+            end
+
+            def attend
+                event = Event.find(params[:id])
+                user = User.find(params[:user_id])
+        
+                if event.users << user
+                    render json: { status: 'SUCCESS', message: 'User is attending event' }
+                else
+                    render json: { status: 'ERROR', message: 'Failed to attend event' }, status: :unprocessable_entity
+                end
+            end
+
+            def unattend
+                event = Event.find(params[:id])
+                user = User.find(params[:user_id]) # Assuming user_id is passed in the request
+        
+                if event.users.delete(user)
+                    render json: { status: 'SUCCESS', message: 'User is no longer attending event' }
+                else
+                    render json: { status: 'ERROR', message: 'Failed to unattend event' }, status: :unprocessable_entity
+                end
+            end
+
+            def attending
+                event = Event.find(params[:id])
+                attending = event.users.select(:email, :first_name, :last_name, :user_id)
+  
+                render json: { status: 'SUCCESS', attending: attending } 
             end
 
             private

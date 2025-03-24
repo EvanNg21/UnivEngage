@@ -11,6 +11,8 @@ function ClubPage(){
     const [isOwner, setIsOwner] = useState(false);
     const [isMember, setIsMember] = useState(false);
     const [memberData, setMemberData] = useState([]);
+    const [attendanceData, setAttendanceData] = useState([]);
+    const [isAttending, setIsAttending] = useState(false);
     
     const [clubData, setClubData] = useState({
         club_id: '',
@@ -90,7 +92,14 @@ function ClubPage(){
         }
     }, [clubData.owner_id, loggedinUser]);
 
-    //club data
+    useEffect(() => {
+        if(selectedEvent){
+            const attending = attendanceData.some(attending => attending.user_id.toString() === loggedinUser);
+            setIsAttending(attending);
+        };
+    }, [attendanceData, loggedinUser, selectedEvent]);
+
+    //club data____________________________________________________________________________________________
     useEffect(() => {
         const fetchClubs = async () => {
             try {
@@ -146,8 +155,76 @@ function ClubPage(){
             console.log("An error has occurred: ", e);
         }
     };
+
+    //get users attending event________________________________________________________________________________________________
+    useEffect(() => {
+        const getAttendance = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/api/v1/events/${selectedEvent.event_id}/attending`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Attendance Data", data);
+                    setAttendanceData(data.attending);
+                } else {
+                    console.error("HTTP error: ", response.status);
+                }
+            } catch (e) {
+                console.log("An error has occurred: ", e);
+            }
+        };
+        getAttendance();
+    }, [selectedEvent, loggedinUser]);
+
+    //attend event
+    const attendEvent = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/events/${selectedEvent.event_id}/attend`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: loggedinUser })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Event attended successfully", data);
+                alert("Event attended successfully");
+            } else {
+                console.error("HTTP error: ", response.status);
+            }
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+        }
+    };
+
+    //unattend event
+    const unattendEvent = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/events/${selectedEvent.event_id}/unattend`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: loggedinUser })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Event unattended successfully", data);
+                alert("Event unattended successfully");
+            } else {
+                console.error("HTTP error: ", response.status);
+            }
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+        }
+    };
     
-    //member data and check admin
+    //member data and check admin_________________________________________________________________________________________
     useEffect(() => {
         const fetchAdmin = async () =>{
             const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
@@ -178,7 +255,7 @@ function ClubPage(){
         fetchAdmin();
     }, [clubId, loggedinUser]);
 
-    //create event
+    //create event____________________________________________________________________________________________
     const handleEventSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -222,8 +299,37 @@ function ClubPage(){
 
         }
     }
+    //get event data
+    useEffect(() => {
+        const fetchEvents = async () =>{
+            const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+            if (!token) {
+                console.error('Token not found');
+                return;
+            }
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/api/v1/events`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Event Data:', data); // Debugging
+                    const filterEvents = data.events.filter(event => event.club_id === parseInt(clubId));
+                    setEventDisplay(filterEvents);
+                } else {
+                    console.error('Failed to fetch event data');
+                }
+            } catch (error) {
+                console.error('Error fetching event data:', error);
+            }
+        };
+        fetchEvents();
+    }, []);
 
-    //create post
+    //create post____________________________________________________________________________________________
     const handlePostSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -269,36 +375,6 @@ function ClubPage(){
         }
     }
 
-    //get event data
-    useEffect(() => {
-        const fetchEvents = async () =>{
-            const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
-            if (!token) {
-                console.error('Token not found');
-                return;
-            }
-            try {
-                const response = await fetch(`http://127.0.0.1:3000/api/v1/events`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Event Data:', data); // Debugging
-                    const filterEvents = data.events.filter(event => event.club_id === parseInt(clubId));
-                    setEventDisplay(filterEvents);
-                } else {
-                    console.error('Failed to fetch event data');
-                }
-            } catch (error) {
-                console.error('Error fetching event data:', error);
-            }
-        };
-        fetchEvents();
-    }, []);
-
     //get post data
     useEffect(() => {
         const fetchPosts = async () =>{
@@ -329,6 +405,7 @@ function ClubPage(){
         fetchPosts();
     }, []);
 
+    //save edit for events____________________________________________________________________________________________
     const handleSaveEdit = async (e) => {
         e.preventDefault();
         try {
@@ -406,7 +483,12 @@ function ClubPage(){
                 {isMember ? (
                   <p> you are a member</p>
                 ):(
-                  <Button onClick={handleJoin} style={{width:'100px'}} variant="primary">Join!</Button> 
+                  <>
+                  {loggedinUser? ( 
+                    <Button onClick={handleJoin} style={{width:'100px'}} variant="primary">Join!</Button>
+                    ):(
+                    <Button href='/login'style={{width:'300px'}} variant="primary">You need to log in to join a club</Button>)}
+                  </> 
                 )}
                 <h2>Club Description: {clubData.description}</h2>
             </header>
@@ -606,6 +688,18 @@ function ClubPage(){
                                 <p>Date: {new Date(selectedEvent.event_date).toLocaleDateString('en-US', dateOptions)}</p>
                                 <p>Time: {new Date(selectedEvent.start_time).toLocaleTimeString('en-US', dateOptions)} - {new Date(selectedEvent.end_time).toLocaleTimeString('en-US', dateOptions)}</p>
                                 <p>Location: {selectedEvent.location}</p>
+                                <h3>Members Attending</h3>
+                                {attendanceData.length > 0 ? (
+                                <p>
+                                    {attendanceData.map((attendee) => (
+                                    <>
+                                        <li  key={attendee.user_id}>{attendee.first_name} {attendee.last_name}, {attendee.email}</li>
+                                    </>
+                                    ))}
+                                </p>
+                                ) : (
+                                <p>No attendees found</p>
+                                )}
                             </>
                         )
                     )}
@@ -614,7 +708,7 @@ function ClubPage(){
                     {isAdmin || isOwner ? (
                         <>
                             {isEditMode ? (
-                                <Button variant="success" onClick={handleSaveEdit} >
+                                <Button variant="primary" onClick={handleSaveEdit} >
                                     Save
                                 </Button>
                             ) : (
@@ -627,9 +721,25 @@ function ClubPage(){
                         <>
                         </>
                     )}
-                    <Button variant="danger" onClick={closeEventInfo}>
-                        Close
-                    </Button>
+                    {attendanceData.some(attendance => attendance.user_id.toString() === loggedinUser)?(
+                        <>
+                            <Button variant="success" onClick={unattendEvent}>
+                                Unattend
+                            </Button>
+                            <Button variant="danger" onClick={closeEventInfo}>
+                                Close
+                            </Button>
+                        </>
+                    ):(
+                        <>
+                        <Button variant="success" onClick={attendEvent}>
+                                Attend
+                            </Button>
+                            <Button variant="danger" onClick={closeEventInfo}>
+                                Close
+                            </Button>
+                        </>
+                    )}
                 </Modal.Footer>
             </Modal>
 
@@ -661,7 +771,7 @@ function ClubPage(){
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    {isAdmin || isOwner ? (
+                    {isAttending ? (
                         <>
                             {isEditPostMode ? (
                                 <Button variant="success" onClick={handleSavePostEdit} >

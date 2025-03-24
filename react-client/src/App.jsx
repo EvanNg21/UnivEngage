@@ -46,7 +46,7 @@ function App() {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Nav className="ms-auto">
                 <Nav.Link style={{color:'black'}}href="/">News</Nav.Link>
-                <Nav.Link style={{color:'black'}}href="/clubs">Find Orginizations</Nav.Link>
+                <Nav.Link style={{color:'black'}}href="/clubs">Explore Clubs</Nav.Link>
                 <Nav.Link style={{color:'black'}}href="/events">Attend Events</Nav.Link>
                 <Nav.Link style={{color:'black'}}href="/">Forms</Nav.Link>
                 <Nav.Link style={{color:'black'}}href="/">Campus Resources</Nav.Link>
