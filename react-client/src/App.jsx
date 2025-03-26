@@ -46,13 +46,13 @@ function App() {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Nav className="ms-auto">
                 <Nav.Link style={{color:'black'}}href="/">News</Nav.Link>
-                <Nav.Link style={{color:'black'}}href="/clubs">Find Orginizations</Nav.Link>
+                <Nav.Link style={{color:'black'}}href="/clubs">Explore Clubs</Nav.Link>
                 <Nav.Link style={{color:'black'}}href="/events">Attend Events</Nav.Link>
                 <Nav.Link style={{color:'black'}}href="/">Forms</Nav.Link>
                 <Nav.Link style={{color:'black'}}href="/">Campus Resources</Nav.Link>
               </Nav>
               <Nav className = "navsignup">
-                <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
+                <input className ="search-bar"type="text" placeholder="Search for Clubs, Events or more"/>
                 {isLoggedIn ? (
                   <>
                   <Nav.Link style={{color:'black'}} href={`/profile/${userId}`}>{userEmail}</Nav.Link>

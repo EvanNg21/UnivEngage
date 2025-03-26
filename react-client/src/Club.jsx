@@ -57,9 +57,10 @@ function Club(){
                 clubs.map(club => (
                     <div key={club.club_id}>
                         <Nav.Link href={`/clubPage/${club.club_id}`} style={{fontSize: '30px'}}>{club.club_name}</Nav.Link>
+                        <p>Description: {club.description}</p>
                         <p>Created At: {new Date(club.created_at).toLocaleString()}</p>
                         <p>Updated At: {new Date(club.updated_at).toLocaleString()}</p>
-                        {/* Add more club details here if needed */}
+                        <p>_____________________________________________________</p>
                     </div>
                 ))
             ) : (

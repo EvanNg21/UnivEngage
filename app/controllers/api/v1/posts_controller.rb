@@ -1,7 +1,7 @@
 module Api
   module V1
       class PostsController < ApplicationController
-          skip_before_action :authenticate_user!, only: [:index, :create, :show, :destroy]
+          skip_before_action :authenticate_user!, only: [:index, :create, :show, :destroy, :update]
           before_action :set_post, only: [:show, :edit, :update, :destroy]
 
           def index
@@ -47,14 +47,14 @@ module Api
 
           private
 
-          def set_Post
+          def set_post
               @posts = Post.find(params[:id])
           rescue ActiveRecord::RecordNotFound
               render json: { status: "ERROR", message: "Post not found" }, status: :not_found
           end
 
           def post_params
-              params.require(:post).permit(:post_id,:post_name, :content, :user_id, :club_id, :views_count, :likes_count, :comments_count, :image)
+              params.require(:post).permit(:post_id, :post_name, :content, :user_id, :club_id, :views_count, :likes_count, :comments_count, :image)
           end
       end 
   end

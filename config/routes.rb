@@ -4,7 +4,13 @@ Rails.application.routes.draw do
     namespace :v1 do
       post 'logins', to: 'logins#create'
       resources :posts
-      resources :events
+      resources :events do
+        member do
+          get 'attending', to: 'events#attending'
+          post 'attend', to: 'events#attend'
+          delete 'unattend', to: 'events#unattend'
+        end
+      end
       resources :clubs do
         member do
           get 'members', to: 'clubs#members'
