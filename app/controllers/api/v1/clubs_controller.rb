@@ -60,7 +60,7 @@ module Api
         end
   
         def index
-          clubs = Club.all
+          clubs = Club.select(:club_id, :club_name, :description, :created_at, :updated_at, :owner_id)
           render json: { status: "SUCCESS", clubs: clubs }, status: :ok
         end
   

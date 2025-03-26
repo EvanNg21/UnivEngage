@@ -52,7 +52,7 @@ function App() {
                 <Nav.Link style={{color:'black'}}href="/">Campus Resources</Nav.Link>
               </Nav>
               <Nav className = "navsignup">
-                <input className ="search-bar"type="text" placeholder="Search for CLubs, Events or more"/>
+                <input className ="search-bar"type="text" placeholder="Search for Clubs, Events or more"/>
                 {isLoggedIn ? (
                   <>
                   <Nav.Link style={{color:'black'}} href={`/profile/${userId}`}>{userEmail}</Nav.Link>

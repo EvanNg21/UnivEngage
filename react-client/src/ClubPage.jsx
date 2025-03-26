@@ -493,7 +493,14 @@ function ClubPage(){
                 <h2>Club Description: {clubData.description}</h2>
             </header>
             <div style={{backgroundColor:"lightgrey"}}className='profile-body'>
-                <h1>Posts</h1>
+                <h1>Posts {isAdmin || isOwner ? (
+                  <>
+                  <Button variant="primary" onClick={handleShowPostModal}>New Post</Button>
+                  </>
+                ):(
+                  <>
+                  </>
+                )}</h1>
                 {postDisplay.length > 0 ? (
                     <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none' }}>
                         {postDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -510,17 +517,17 @@ function ClubPage(){
                 ) : (
                     <p>No posts found</p>
                 )}
-                {isAdmin || isOwner ? (
+                
+            </div>
+            <div style={{backgroundColor:"grey", maxHeight: "100vh"}}className='profile-body'>
+                <h1>Events {isAdmin || isOwner ? (
                   <>
-                  <Button variant="primary" onClick={handleShowPostModal}>New Post</Button>
+                  <Button variant="primary" onClick={handleShowEventModal}>New Event</Button>
                   </>
                 ):(
                   <>
                   </>
-                )}
-            </div>
-            <div style={{backgroundColor:"grey", maxHeight: "100vh"}}className='profile-body'>
-                <h1>Events</h1>
+                )}</h1>
                 {eventDisplay.length > 0 ? (
                     <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none' }}>
                         {eventDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -538,14 +545,6 @@ function ClubPage(){
                     </ul>
                 ) : (
                     <p>No events found</p>
-                )}
-                {isAdmin || isOwner ? (
-                  <>
-                  <Button variant="primary" onClick={handleShowEventModal}>New Event</Button>
-                  </>
-                ):(
-                  <>
-                  </>
                 )}
             </div>
             <div className='profile-body'>
@@ -570,7 +569,7 @@ function ClubPage(){
                   </>
                 )}
             </div>
-            {/* Event pop out input */}
+            {/* Event create pop out input */}
             <Modal show={showEventModal} onHide={handleCloseEventModal}>
                 <Modal.Header>
                     <Modal.Title>Create Event</Modal.Title>
@@ -615,7 +614,7 @@ function ClubPage(){
             </Modal>
 
 
-            {/* Posts pop out input */}
+            {/* Posts create pop out input */}
             <Modal show={showPostModal} onHide={handleClosePostModal}>
                 <Modal.Header>
                     <Modal.Title>Create Post</Modal.Title>
