@@ -223,7 +223,6 @@ function ClubEdit() {
                 <h2>Club Description: <input style={{color: 'white'}} type="text" name= "description" placeholder="description" value={clubData.description} onChange={handleInputChange}/> </h2>
             </header>
             <div className='profile-body'>
-                <p>Club Owner: {ownerData.first_name} {ownerData.last_name}, {ownerData.email}</p>
                 <p>Members:</p>
                 {memberData.length > 0 ? (
                   <ul>

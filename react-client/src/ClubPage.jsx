@@ -59,8 +59,10 @@ function ClubPage(){
 
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventInfo, setShowEventInfo] = useState(false);
-    const closeEventInfo = () => setShowEventInfo(false);
-
+    const closeEventInfo = () => {
+        setShowEventInfo(false);
+        setEditMode(false);
+    };
     const handleShowEventInfo = (event) => {
         setSelectedEvent(event);
         setShowEventInfo(true);
@@ -73,8 +75,10 @@ function ClubPage(){
 
     const [selectedPost, setSelectedPost] = useState(null);
     const [showPostInfo, setShowPostInfo] = useState(false);
-    const closePostInfo = () => setShowPostInfo(false);
-
+    const closePostInfo = () => {
+        setShowPostInfo(false);
+        setEditPostMode(false);
+    } 
     const handleShowPostInfo = (post) => {
         setSelectedPost(post);
         setShowPostInfo(true);
@@ -554,7 +558,7 @@ function ClubPage(){
                     {clubData.members.map((member) => (
                       <li key={member.user_id}>{member.first_name} {member.last_name}, {member.email}
                         {member.user_id == clubData.owner_id && ( 
-                            <>, Club Owner</> )}</li>
+                            <> Club Owner</> )}</li>
                     ))}
                   </ul>
                 ) : (
@@ -574,31 +578,31 @@ function ClubPage(){
                 <Modal.Header>
                     <Modal.Title>Create Event</Modal.Title>
                 </Modal.Header>
-                <Modal.Body style={{backgroundColor: 'lightgrey'}}>
+                <Modal.Body style={{backgroundColor: 'white'}}>
                     <Form onSubmit={handleEventSubmit}>
                         <Form.Group>
                             <Form.Label>*Title</Form.Label>
-                            <Form.Control type="text" placeholder="Enter title" required value={eventData.event_name} onChange={(e) => setEventData({...eventData, event_name: e.target.value})} />
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="text" placeholder="Enter title" required value={eventData.event_name} onChange={(e) => setEventData({...eventData, event_name: e.target.value})} />
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>*Description</Form.Label>
-                            <Form.Control as="textarea" placeholder="Enter description" required value={eventData.description} onChange={(e) => setEventData({...eventData, description: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} as="textarea" placeholder="Enter description" required value={eventData.description} onChange={(e) => setEventData({...eventData, description: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>*Date</Form.Label>
-                            <Form.Control type="date" required value={eventData.event_date} onChange={(e) => setEventData({...eventData, event_date: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="date" required value={eventData.event_date} onChange={(e) => setEventData({...eventData, event_date: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Start Time</Form.Label>
-                            <Form.Control type="time" value={eventData.start_time} onChange={(e) => setEventData({...eventData, start_time: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="time" value={eventData.start_time} onChange={(e) => setEventData({...eventData, start_time: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>End Time</Form.Label>
-                            <Form.Control type="time" value={eventData.end_time} onChange={(e) => setEventData({...eventData, end_time: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="time" value={eventData.end_time} onChange={(e) => setEventData({...eventData, end_time: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>*Location</Form.Label>
-                            <Form.Control type="text" placeholder="Enter location" value={eventData.location} onChange={(e) => setEventData({...eventData, location: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="text" placeholder="Enter location" value={eventData.location} onChange={(e) => setEventData({...eventData, location: e.target.value})}/>
                         </Form.Group>
                         <p>{eventMessage}</p>
                         <Button style={{width:'100px', justifyContent:'center', alignItems:'center', display:'flex', margin:'auto', marginTop:'10px'}} variant="primary" type="submit">
@@ -619,19 +623,19 @@ function ClubPage(){
                 <Modal.Header>
                     <Modal.Title>Create Post</Modal.Title>
                 </Modal.Header>
-                <Modal.Body style={{backgroundColor: 'lightgrey'}}>
+                <Modal.Body style={{backgroundColor: 'white'}}>
                     <Form onSubmit={handlePostSubmit}>
                         <Form.Group>
                             <Form.Label>Title</Form.Label>
-                            <Form.Control type="text" placeholder="Enter title" value={postData.post_name} onChange={(e) => setPostData({...postData, post_name: e.target.value})} />
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="text" placeholder="Enter title" value={postData.post_name} onChange={(e) => setPostData({...postData, post_name: e.target.value})} />
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>*Content</Form.Label>
-                            <Form.Control as="textarea" placeholder="Enter content" required value={postData.description} onChange={(e) => setPostData({...postData, content: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} as="textarea" placeholder="Enter content" required value={postData.description} onChange={(e) => setPostData({...postData, content: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Image</Form.Label>
-                            <Form.Control as="textarea" placeholder="image (WIP)"/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} as="textarea" placeholder="image (WIP)"/>
                         </Form.Group>
                         <p>{postMessage}</p>
                         <Button style={{width:'100px', justifyContent:'center', alignItems:'center', display:'flex', margin:'auto', marginTop:'10px'}} variant="primary" type="submit">
@@ -648,7 +652,7 @@ function ClubPage(){
             
             {/* Event info pop out input */}
             <Modal show={showEventInfo} onHide={closeEventInfo}>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton >
                     <Modal.Title>Event Information</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -657,27 +661,27 @@ function ClubPage(){
                             <Form>
                                 <Form.Group>
                                     <Form.Label>Event Name</Form.Label>
-                                    <Form.Control type="text" value={selectedEvent.event_name} onChange={(e) => setSelectedEvent({...selectedEvent, event_name: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="text" value={selectedEvent.event_name} onChange={(e) => setSelectedEvent({...selectedEvent, event_name: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Description</Form.Label>
-                                    <Form.Control as="textarea" value={selectedEvent.description} onChange={(e) => setSelectedEvent({...selectedEvent, description: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} as="textarea" value={selectedEvent.description} onChange={(e) => setSelectedEvent({...selectedEvent, description: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Date</Form.Label>
-                                    <Form.Control type="date" value={selectedEvent.event_date} onChange={(e) => setSelectedEvent({...selectedEvent, event_date: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="date" value={selectedEvent.event_date} onChange={(e) => setSelectedEvent({...selectedEvent, event_date: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Start Time</Form.Label>
-                                    <Form.Control type="time" value={selectedEvent.start_time} onChange={(e) => setSelectedEvent({...selectedEvent, start_time: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="time" value={selectedEvent.start_time} onChange={(e) => setSelectedEvent({...selectedEvent, start_time: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>End Time</Form.Label>
-                                    <Form.Control type="time" value={selectedEvent.end_time} onChange={(e) => setSelectedEvent({...selectedEvent, end_time: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="time" value={selectedEvent.end_time} onChange={(e) => setSelectedEvent({...selectedEvent, end_time: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Location</Form.Label>
-                                    <Form.Control type="text" value={selectedEvent.location} onChange={(e) => setSelectedEvent({...selectedEvent, location: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="text" value={selectedEvent.location} onChange={(e) => setSelectedEvent({...selectedEvent, location: e.target.value})} />
                                 </Form.Group>
                             </Form>
                         ) : (
@@ -753,11 +757,11 @@ function ClubPage(){
                             <Form>
                                 <Form.Group>
                                     <Form.Label>Post Name</Form.Label>
-                                    <Form.Control type="text" value={selectedPost.post_name} onChange={(e) => setSelectedPost({...selectedPost, post_name: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="text" value={selectedPost.post_name} onChange={(e) => setSelectedPost({...selectedPost, post_name: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Content</Form.Label>
-                                    <Form.Control type="text" value={selectedPost.content} onChange={(e) => setSelectedPost({...selectedPost, content: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="text" value={selectedPost.content} onChange={(e) => setSelectedPost({...selectedPost, content: e.target.value})} />
                                 </Form.Group>
                             </Form>
                         ) : (
