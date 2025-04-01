@@ -20,6 +20,7 @@ function ClubPage(){
         owner_id: '',
         members: [],
         description: '',
+        club_picture_url: '',
     });
 
     const [eventData, setEventData] = useState({
@@ -103,43 +104,64 @@ function ClubPage(){
         };
     }, [attendanceData, loggedinUser, selectedEvent]);
 
-    //club data____________________________________________________________________________________________
+
+    const [previewImage, setPreviewImage] = useState('');
+    
     useEffect(() => {
-        const fetchClubs = async () => {
-            try {
-                const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Fetched data:", data);
-                    // Check if the response contains the expected structure
-                    if (data && data.club) {
-                        setClubData({
-                            club_id: data.club.club_id,
-                            club_name: data.club.club_name,
-                            owner_id: data.club.owner_id,
-                            members: data.club.members,
-                            description: data.club.description
-                        });
-                        const isMember = data.club.members.some((member) => member.user_id.toString() === loggedinUser);
-                        setIsMember(isMember);
-                    } else {
-                        console.error("Unexpected data structure:", data);
-                    }
-                } else {
-                    console.error("HTTP error: ", response.status);
-                }
-            } catch (e) {
-                console.log("An error has occurred: ", e);
+        return () => {
+            if (previewImage && previewImage.startsWith('blob:')) {
+                URL.revokeObjectURL(previewImage);
             }
         };
-        fetchClubs();
-    }, [clubId, loggedinUser]);
+    }, [previewImage]);
 
+    //club data____________________________________________________________________________________________
+    useEffect(() => {
+            const fetchClubData = async () => {
+                if (!token) {
+                    console.error('Token not found');
+                    return;
+                }
+    
+                try {
+                    const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const club = Array.isArray(data) ? 
+                            data.find(u => u.club_id === parseInt(clubId)) : 
+                            data;
+                        console.log('Club Data Response:', clubData); // Debugging
+                        if (club){
+                            setClubData({
+                                club_name: club.club_name || '',
+                                description: club.description || '',
+                                owner_id: club.owner_id || '',
+                                club_id: club.club_id||'',
+                                members: club.members || [],
+                                club_picture_url: club.club_picture_url || '',
+                            });
+                            if (club.club_picture_url) {
+                                setPreviewImage(club.club_picture_url);
+                            }
+                        }
+                        const isMember = data.members.some((member) => member.user_id.toString() === loggedinUser);
+                        setIsMember(isMember);
+                    } else {
+                        console.error('Failed to fetch club data');
+                    }
+                } catch (error) {
+                    console.error('Error fetching club data:', error);
+                }
+            };
+            fetchClubData();
+        }, [clubId, token]);
+    
 //join club
     const handleJoin = async () => {
         try {
@@ -479,11 +501,11 @@ function ClubPage(){
         }
     };
     
-   
+    
     return (
         <div className='base-page'>
             <header className='profile-header'>
-                <h1 className="clubfade">{clubData.club_name}</h1>
+                <h1 className="clubfade">{clubData.club_name} <img src={previewImage || '/default-club.png'} alt="club" style={{width: '150px',height: '150px',borderRadius: '75px',objectFit: 'cover' }}/></h1>
                 {isMember ? (
                   <p> you are a member</p>
                 ):(
@@ -553,7 +575,7 @@ function ClubPage(){
             </div>
             <div className='profile-body'>
                 <p>Members:</p>
-                {clubData.members.length > 0 ? (
+                {clubData.members && clubData.members.length > 0 ? (
                   <ul>
                     {clubData.members.map((member) => (
                       <li key={member.user_id}>{member.first_name} {member.last_name}, {member.email}

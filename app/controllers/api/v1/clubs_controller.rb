@@ -61,14 +61,16 @@ module Api
   
         def index
           clubs = Club.select(:club_id, :club_name, :description, :created_at, :updated_at, :owner_id)
-          render json: { status: "SUCCESS", clubs: clubs }, status: :ok
+          render json: clubs.map { |club| club.as_json.merge(club_picture_url: club.club_picture.attached? ? url_for(club.club_picture) : nil) }, status: :ok
         end
   
         def show
-          render json: { status: "SUCCESS", club: @club }, status: :ok
+          @club = Club.find(params[:id])
+          render json: @club.as_json.merge(club_picture_url: @club.club_picture.attached? ? url_for(@club.club_picture) : nil), status: :ok
         end
   
         def update
+          @club = Club.find(params[:id])
           if @club.update(club_params)
             render json: { status: "SUCCESS", club: @club }, status: :ok
           else
@@ -102,7 +104,7 @@ module Api
         end
   
         def club_params # only allow a list of trusted parameters through
-          params.require(:club).permit(:club_name, :club_id, :owner_id, :members, :description)
+          params.require(:club).permit(:club_name, :club_id, :owner_id, :members, :description, :club_picture)
         end
       end
     end

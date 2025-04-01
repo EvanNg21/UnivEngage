@@ -6,7 +6,14 @@ import Nav from 'react-bootstrap/Nav';
 function Club(){
     const Navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [clubs, setClubs] = useState([]);
+    const [clubData, setClubData] = useState({
+        club_id: '',
+        club_name: '',
+        owner_id: '',
+        members: [],
+        description: '',
+        club_picture_url: '',
+    });
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -21,28 +28,29 @@ function Club(){
         }
     };
 
+
     useEffect(() => {
-        const fetchClubs = async () => {
-            try{
-                const response = await fetch('http://127.0.0.1:3000/api/v1/clubs', {
+        const fetchClubData = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
                 });
                 if (response.ok) {
-                    const json = await response.json();
-                    setClubs(json.clubs);
-                    console.log("succuess  ", json);
+                    const data = await response.json();
+                    setClubData(Array.isArray(data) ? data : [data]); // Ensure clubData is an array
+                    console.log('Club Data Response:', data);
                 } else {
-                    throw response;
-                } 
-            } catch (e) {
-                console.log("An error has occurred: ", e);
+                    console.error('Failed to fetch club data');
+                }
+            } catch (error) {
+                console.error('Error fetching club data:', error);
             }
-        }
-        fetchClubs();
-    },[])
+        };
+        fetchClubData();
+    }, []);
 
     return(
     <div className = 'base-page'>
@@ -53,10 +61,10 @@ function Club(){
             <Button onClick={createClub} variant="outline-primary">Create a Club!</Button>
         </div>
         <div className="clubs-display">
-            {clubs.length > 0 ? (
-                clubs.map(club => (
+            {clubData.length > 0 ? (
+                clubData.map(club => (
                     <div key={club.club_id}>
-                        <Nav.Link href={`/clubPage/${club.club_id}`} style={{fontSize: '30px'}}>{club.club_name}</Nav.Link>
+                        <Nav.Link href={`/clubPage/${club.club_id}`} style={{fontSize: '30px'}}>{club.club_name}{club.club_picture_url && <img src={club.club_picture_url} alt={`${club.club_name} picture`} style={{ width: '50px', height: '50px', borderRadius: '75px', objectFit: 'cover' }} />}</Nav.Link>
                         <p>Description: {club.description}</p>
                         <p>Created At: {new Date(club.created_at).toLocaleString()}</p>
                         <p>Updated At: {new Date(club.updated_at).toLocaleString()}</p>
