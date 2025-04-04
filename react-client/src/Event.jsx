@@ -43,28 +43,28 @@ function Event(){
             fetchEvents();
         },[])
 
-    useEffect(() => {
-            const fetchClubs = async () => {
-                try{
-                    const response = await fetch('http://127.0.0.1:3000/api/v1/clubs', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                    });
-                    if (response.ok) {
-                        const json = await response.json();
-                        setClubInfo(json.clubs);
-                        console.log("succuess  ", clubInfo);
-                    } else {
-                        throw response;
-                    } 
-                } catch (e) {
-                    console.log("An error has occurred: ", e);
+useEffect(() => {
+        const fetchClubData = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setClubData(Array.isArray(data) ? data : [data]); // Ensure clubData is an array
+                    console.log('Club Data Response:', data);
+                } else {
+                    console.error('Failed to fetch club data');
                 }
+            } catch (error) {
+                console.error('Error fetching club data:', error);
             }
-            fetchClubs();
-        },[])
+        };
+        fetchClubData();
+    }, []);
         
     return(
     <div className = 'base-page'>

@@ -135,50 +135,45 @@ function ClubPage(){
 
     //club data____________________________________________________________________________________________
     useEffect(() => {
-            const fetchClubData = async () => {
-                if (!token) {
-                    console.error('Token not found');
-                    return;
-                }
-    
-                try {
-                    const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        const club = Array.isArray(data) ? 
-                            data.find(u => u.club_id === parseInt(clubId)) : 
-                            data;
-                        console.log('Club Data Response:', clubData); // Debugging
-                        if (club){
-                            setClubData({
-                                club_name: club.club_name || '',
-                                description: club.description || '',
-                                owner_id: club.owner_id || '',
-                                club_id: club.club_id||'',
-                                members: club.members || [],
-                                club_picture_url: club.club_picture_url || '',
-                            });
-                            if (club.club_picture_url) {
-                                setPreviewImage(club.club_picture_url);
-                            }
+        const fetchClubData = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const club = Array.isArray(data) ? 
+                        data.find(u => u.club_id === parseInt(clubId)) : 
+                        data;
+                    console.log('Club Data Response:', clubData); // Debugging
+                    if (club){
+                        setClubData({
+                            club_name: club.club_name || '',
+                            description: club.description || '',
+                            owner_id: club.owner_id || '',
+                            club_id: club.club_id||'',
+                            members: club.members || [],
+                            club_picture_url: club.club_picture_url || '',
+                        });
+                        if (club.club_picture_url) {
+                            setPreviewImage(club.club_picture_url);
                         }
-                        const isMember = data.members.some((member) => member.user_id.toString() === loggedinUser);
-                        setIsMember(isMember);
-                    } else {
-                        console.error('Failed to fetch club data');
                     }
-                } catch (error) {
-                    console.error('Error fetching club data:', error);
+                    const isMember = data.members.some((member) => member.user_id.toString() === loggedinUser);
+                    setIsMember(isMember);
+                } else {
+                    console.error('Failed to fetch club data');
                 }
-            };
-            fetchClubData();
-        }, [clubId, token]);
+            } catch (error) {
+                console.error('Error fetching club data:', error);
+            }
+        };
+        fetchClubData();
+    }, [clubId, token]);
     
 //join club
     const handleJoin = async () => {
@@ -346,11 +341,6 @@ function ClubPage(){
     //get event data
     useEffect(() => {
         const fetchEvents = async () =>{
-            const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
-            if (!token) {
-                console.error('Token not found');
-                return;
-            }
             try {
                 const response = await fetch(`http://127.0.0.1:3000/api/v1/events`, {
                     method: 'GET',
@@ -429,11 +419,6 @@ function ClubPage(){
     //get post data
     useEffect(() => {
         const fetchPosts = async () =>{
-            const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
-            if (!token) {
-                console.error('Token not found');
-                return;
-            }
             try {
                 const response = await fetch(`http://127.0.0.1:3000/api/v1/posts`, {
                     method: 'GET',
@@ -784,20 +769,28 @@ function ClubPage(){
                         <>
                         </>
                     )}
-                    {attendanceData.some(attendance => attendance.user_id.toString() === loggedinUser)?(
+                    {isMember ? (
+                        attendanceData.some(attendance => attendance.user_id.toString() === loggedinUser)?(
+                            <>
+                                <Button variant="success" onClick={unattendEvent}>
+                                    Unattend
+                                </Button>
+                                <Button variant="danger" onClick={closeEventInfo}>
+                                    Close
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                            <Button variant="success" onClick={attendEvent}>
+                                    Attend
+                                </Button>
+                                <Button variant="danger" onClick={closeEventInfo}>
+                                    Close
+                                </Button>
+                            </>
+                        )
+                    ) : (
                         <>
-                            <Button variant="success" onClick={unattendEvent}>
-                                Unattend
-                            </Button>
-                            <Button variant="danger" onClick={closeEventInfo}>
-                                Close
-                            </Button>
-                        </>
-                    ):(
-                        <>
-                        <Button variant="success" onClick={attendEvent}>
-                                Attend
-                            </Button>
                             <Button variant="danger" onClick={closeEventInfo}>
                                 Close
                             </Button>
