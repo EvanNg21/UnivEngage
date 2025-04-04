@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom';
 import Button from 'react-bootstrap/esm/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -20,6 +20,7 @@ function ClubPage(){
         owner_id: '',
         members: [],
         description: '',
+        club_picture_url: '',
     });
 
     const [eventData, setEventData] = useState({
@@ -41,6 +42,7 @@ function ClubPage(){
         views_count: '',
         likes_count: '',
         comments_count: '',
+        post_image: '',
     });
 
     const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
@@ -53,14 +55,19 @@ function ClubPage(){
 
     const [postDisplay,setPostDisplay] = useState([]);
     const [showPostModal, setShowPostModal] = useState(false);
-    const handleClosePostModal = () => setShowPostModal(false);
+    const handleClosePostModal = () => {
+        setShowPostModal(false);
+        setPreviewPostImage(null);
+    };
     const handleShowPostModal = () => setShowPostModal(true);
     const [postMessage, setPostMessage] = useState('');
 
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventInfo, setShowEventInfo] = useState(false);
-    const closeEventInfo = () => setShowEventInfo(false);
-
+    const closeEventInfo = () => {
+        setShowEventInfo(false);
+        setEditMode(false);
+    };
     const handleShowEventInfo = (event) => {
         setSelectedEvent(event);
         setShowEventInfo(true);
@@ -73,8 +80,11 @@ function ClubPage(){
 
     const [selectedPost, setSelectedPost] = useState(null);
     const [showPostInfo, setShowPostInfo] = useState(false);
-    const closePostInfo = () => setShowPostInfo(false);
-
+    const closePostInfo = () => {
+        setShowPostInfo(false);
+        setEditPostMode(false);
+        setPreviewPostImage(null);
+    } 
     const handleShowPostInfo = (post) => {
         setSelectedPost(post);
         setShowPostInfo(true);
@@ -99,43 +109,77 @@ function ClubPage(){
         };
     }, [attendanceData, loggedinUser, selectedEvent]);
 
-    //club data____________________________________________________________________________________________
+
+    const [previewImage, setPreviewImage] = useState('');
+    
     useEffect(() => {
-        const fetchClubs = async () => {
-            try {
-                const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Fetched data:", data);
-                    // Check if the response contains the expected structure
-                    if (data && data.club) {
-                        setClubData({
-                            club_id: data.club.club_id,
-                            club_name: data.club.club_name,
-                            owner_id: data.club.owner_id,
-                            members: data.club.members,
-                            description: data.club.description
-                        });
-                        const isMember = data.club.members.some((member) => member.user_id.toString() === loggedinUser);
-                        setIsMember(isMember);
-                    } else {
-                        console.error("Unexpected data structure:", data);
-                    }
-                } else {
-                    console.error("HTTP error: ", response.status);
-                }
-            } catch (e) {
-                console.log("An error has occurred: ", e);
+        return () => {
+            if (previewImage && previewImage.startsWith('blob:')) {
+                URL.revokeObjectURL(previewImage);
             }
         };
-        fetchClubs();
-    }, [clubId, loggedinUser]);
+    }, [previewImage]);
 
+
+    const [postImage, setPostImage] = useState(null);
+    const [previewPostImage, setPreviewPostImage] = useState('');
+    const filePostInputRef = useRef(null);
+    
+    const handlePostFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setPostImage(file);
+            setPreviewPostImage(URL.createObjectURL(file));
+        }
+    };
+
+    //club data____________________________________________________________________________________________
+    useEffect(() => {
+            const fetchClubData = async () => {
+                if (!token) {
+                    console.error('Token not found');
+                    return;
+                }
+    
+                try {
+                    const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const club = Array.isArray(data) ? 
+                            data.find(u => u.club_id === parseInt(clubId)) : 
+                            data;
+                        console.log('Club Data Response:', clubData); // Debugging
+                        if (club){
+                            setClubData({
+                                club_name: club.club_name || '',
+                                description: club.description || '',
+                                owner_id: club.owner_id || '',
+                                club_id: club.club_id||'',
+                                members: club.members || [],
+                                club_picture_url: club.club_picture_url || '',
+                            });
+                            if (club.club_picture_url) {
+                                setPreviewImage(club.club_picture_url);
+                            }
+                        }
+                        const isMember = data.members.some((member) => member.user_id.toString() === loggedinUser);
+                        setIsMember(isMember);
+                    } else {
+                        console.error('Failed to fetch club data');
+                    }
+                } catch (error) {
+                    console.error('Error fetching club data:', error);
+                }
+            };
+            fetchClubData();
+        }, [clubId, token]);
+    
 //join club
     const handleJoin = async () => {
         try {
@@ -332,23 +376,30 @@ function ClubPage(){
     //create post____________________________________________________________________________________________
     const handlePostSubmit = async (e) => {
         e.preventDefault();
+    
+        const formData = new FormData();
+        formData.append('post[post_name]', postData.post_name);
+        formData.append('post[content]', postData.content);
+        formData.append('post[views_count]', postData.views_count);
+        formData.append('post[likes_count]', postData.likes_count);
+        formData.append('post[comments_count]', postData.comments_count);
+        formData.append('post[user_id]', loggedinUser);
+        formData.append('post[club_id]', clubId);
+    
+        // Append the image file if you have one
+        if (postImage) {
+            formData.append('post[post_image]', postImage);
+        }
+    
         try {
             const response = await fetch(`http://127.0.0.1:3000/api/v1/posts`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${token}`, // Include token if needed
                 },
-                body: JSON.stringify({
-                    post_id: postData.post_id,
-                    post_name: postData.post_name,
-                    content: postData.content,
-                    views_count: postData.views_count,
-                    likes_count: postData.likes_count,
-                    comments_count: postData.comments_count,
-                    user_id: loggedinUser,
-                    club_id: clubId
-                })
+                body: formData,
             });
+    
             if (response.ok) {
                 const data = await response.json();
                 setPostData({
@@ -359,21 +410,21 @@ function ClubPage(){
                     club_id: '',
                     views_count: '',
                     likes_count: '',
-                    comments_count: ''
-                })
+                    comments_count: '',
+                    image: null, // Reset image
+                });
                 console.log("Post created successfully", data);
                 handleClosePostModal();
-                alert("Post post successfully");
+                alert("Post created successfully");
             } else {
                 console.error("HTTP error: ", response.status);
-                setPostMessage("Failed to create Post"); 
+                setPostMessage("Failed to create Post");
             }
         } catch (e) {
             console.log("An error has occurred: ", e);
-            setPostMessage("Failed to create Post"); 
-
+            setPostMessage("Failed to create Post");
         }
-    }
+    };
 
     //get post data
     useEffect(() => {
@@ -393,8 +444,9 @@ function ClubPage(){
                 if (response.ok) {
                     const data = await response.json();
                     console.log('Posts Data:', data); // Debugging
-                    const filterEvents = data.posts.filter(post => post.club_id === parseInt(clubId));
-                    setPostDisplay(filterEvents);
+                    const filterPosts = data.filter(post => post.club_id === parseInt(clubId));
+                    setPostDisplay(filterPosts);
+                    console.log('Filtered posts:', postDisplay);
                 } else {
                     console.error('Failed to fetch post data');
                 }
@@ -445,19 +497,25 @@ function ClubPage(){
 
     const handleSavePostEdit = async (e) => {
         e.preventDefault();
+    
+        const formData = new FormData();
+        formData.append('post[post_name]', selectedPost.post_name);
+        formData.append('post[content]', selectedPost.content);
+    
+        // Append the image file if you have one
+        if (postImage) {
+            formData.append('post[post_image]', postImage);
+        }
+    
         try {
             const response = await fetch(`http://127.0.0.1:3000/api/v1/posts/${selectedPost.post_id}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${token}`, // Include token if needed
                 },
-                body: JSON.stringify({
-                    post: {
-                        post_name: selectedPost.post_name,
-                        content: selectedPost.content
-                    }
-                })
+                body: formData,
             });
+    
             if (response.ok) {
                 const updatedPost = await response.json();
                 console.log("Post updated successfully", updatedPost);
@@ -475,11 +533,11 @@ function ClubPage(){
         }
     };
     
-   
+    
     return (
         <div className='base-page'>
             <header className='profile-header'>
-                <h1 className="clubfade">{clubData.club_name}</h1>
+                <h1 className="clubfade">{clubData.club_name} <img src={previewImage || '/default-club.png'} alt="club" style={{width: '150px',height: '150px',borderRadius: '75px',objectFit: 'cover' }}/></h1>
                 {isMember ? (
                   <p> you are a member</p>
                 ):(
@@ -502,12 +560,13 @@ function ClubPage(){
                   </>
                 )}</h1>
                 {postDisplay.length > 0 ? (
-                    <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none' }}>
+                    <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', width: "100%"}}>
                         {postDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map((post) => (
-                            <li key={post.post_id} style={{ margin: '10px', flex: '0 0 30%', backgroundColor: 'white', padding: '10px', borderRadius: '5px', width: '300px' }}>
+                            <li key={post.post_id} style={{ margin: '10px', flex: '0 0 20%', backgroundColor: 'white', padding: '10px', borderRadius: '5px'}}>
                                 <button style={{borderRadius:"10px", width:"100%"}} onClick={() => handleShowPostInfo(post)}>
                                     <h3>{post.post_name}</h3>
+                                    {post.post_image && <img src={post.post_image} alt={`${post.post_name} picture`} style={{ width: '100px', height: '100px', objectFit: 'cover' }} />}
                                 </button>
                                 <p>{post.content}</p>
                                 <p>{new Date(post.created_at).toLocaleDateString('en-US', dateOptions)}</p>
@@ -549,12 +608,12 @@ function ClubPage(){
             </div>
             <div className='profile-body'>
                 <p>Members:</p>
-                {clubData.members.length > 0 ? (
+                {clubData.members && clubData.members.length > 0 ? (
                   <ul>
                     {clubData.members.map((member) => (
                       <li key={member.user_id}>{member.first_name} {member.last_name}, {member.email}
                         {member.user_id == clubData.owner_id && ( 
-                            <>, Club Owner</> )}</li>
+                            <> Club Owner</> )}</li>
                     ))}
                   </ul>
                 ) : (
@@ -574,31 +633,31 @@ function ClubPage(){
                 <Modal.Header>
                     <Modal.Title>Create Event</Modal.Title>
                 </Modal.Header>
-                <Modal.Body style={{backgroundColor: 'lightgrey'}}>
+                <Modal.Body style={{backgroundColor: 'white'}}>
                     <Form onSubmit={handleEventSubmit}>
                         <Form.Group>
                             <Form.Label>*Title</Form.Label>
-                            <Form.Control type="text" placeholder="Enter title" required value={eventData.event_name} onChange={(e) => setEventData({...eventData, event_name: e.target.value})} />
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="text" placeholder="Enter title" required value={eventData.event_name} onChange={(e) => setEventData({...eventData, event_name: e.target.value})} />
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>*Description</Form.Label>
-                            <Form.Control as="textarea" placeholder="Enter description" required value={eventData.description} onChange={(e) => setEventData({...eventData, description: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} as="textarea" placeholder="Enter description" required value={eventData.description} onChange={(e) => setEventData({...eventData, description: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>*Date</Form.Label>
-                            <Form.Control type="date" required value={eventData.event_date} onChange={(e) => setEventData({...eventData, event_date: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="date" required value={eventData.event_date} onChange={(e) => setEventData({...eventData, event_date: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Start Time</Form.Label>
-                            <Form.Control type="time" value={eventData.start_time} onChange={(e) => setEventData({...eventData, start_time: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="time" value={eventData.start_time} onChange={(e) => setEventData({...eventData, start_time: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>End Time</Form.Label>
-                            <Form.Control type="time" value={eventData.end_time} onChange={(e) => setEventData({...eventData, end_time: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="time" value={eventData.end_time} onChange={(e) => setEventData({...eventData, end_time: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>*Location</Form.Label>
-                            <Form.Control type="text" placeholder="Enter location" value={eventData.location} onChange={(e) => setEventData({...eventData, location: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="text" placeholder="Enter location" value={eventData.location} onChange={(e) => setEventData({...eventData, location: e.target.value})}/>
                         </Form.Group>
                         <p>{eventMessage}</p>
                         <Button style={{width:'100px', justifyContent:'center', alignItems:'center', display:'flex', margin:'auto', marginTop:'10px'}} variant="primary" type="submit">
@@ -619,19 +678,24 @@ function ClubPage(){
                 <Modal.Header>
                     <Modal.Title>Create Post</Modal.Title>
                 </Modal.Header>
-                <Modal.Body style={{backgroundColor: 'lightgrey'}}>
+                <Modal.Body style={{backgroundColor: 'white'}}>
                     <Form onSubmit={handlePostSubmit}>
                         <Form.Group>
+                        <h3 style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                            <img src={previewPostImage || '/default-club.png'} alt="post-Image" style={{width: '50%',height: '50%', objectFit: 'cover' }}/>
+                        </h3>
                             <Form.Label>Title</Form.Label>
-                            <Form.Control type="text" placeholder="Enter title" value={postData.post_name} onChange={(e) => setPostData({...postData, post_name: e.target.value})} />
+                            <Form.Control style={{backgroundColor:"lightgrey"}} type="text" placeholder="Enter title" value={postData.post_name} onChange={(e) => setPostData({...postData, post_name: e.target.value})} />
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>*Content</Form.Label>
-                            <Form.Control as="textarea" placeholder="Enter content" required value={postData.description} onChange={(e) => setPostData({...postData, content: e.target.value})}/>
+                            <Form.Control style={{backgroundColor:"lightgrey"}} as="textarea" placeholder="Enter content" required value={postData.description} onChange={(e) => setPostData({...postData, content: e.target.value})}/>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>Image</Form.Label>
-                            <Form.Control as="textarea" placeholder="image (WIP)"/>
+                            <input type='file' name='post_picture' onChange={handlePostFileChange}ref={filePostInputRef}accept="image/*"style={{ display: 'none' }}/>
+                            <div onClick={() => filePostInputRef.current.click()} style={{ cursor: 'pointer' }}>
+                                <button type="button" style={{borderRadius:'10px'}}>Click to change post image</button>
+                            </div>
                         </Form.Group>
                         <p>{postMessage}</p>
                         <Button style={{width:'100px', justifyContent:'center', alignItems:'center', display:'flex', margin:'auto', marginTop:'10px'}} variant="primary" type="submit">
@@ -648,7 +712,7 @@ function ClubPage(){
             
             {/* Event info pop out input */}
             <Modal show={showEventInfo} onHide={closeEventInfo}>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton >
                     <Modal.Title>Event Information</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -657,27 +721,27 @@ function ClubPage(){
                             <Form>
                                 <Form.Group>
                                     <Form.Label>Event Name</Form.Label>
-                                    <Form.Control type="text" value={selectedEvent.event_name} onChange={(e) => setSelectedEvent({...selectedEvent, event_name: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="text" value={selectedEvent.event_name} onChange={(e) => setSelectedEvent({...selectedEvent, event_name: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Description</Form.Label>
-                                    <Form.Control as="textarea" value={selectedEvent.description} onChange={(e) => setSelectedEvent({...selectedEvent, description: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} as="textarea" value={selectedEvent.description} onChange={(e) => setSelectedEvent({...selectedEvent, description: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Date</Form.Label>
-                                    <Form.Control type="date" value={selectedEvent.event_date} onChange={(e) => setSelectedEvent({...selectedEvent, event_date: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="date" value={selectedEvent.event_date} onChange={(e) => setSelectedEvent({...selectedEvent, event_date: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Start Time</Form.Label>
-                                    <Form.Control type="time" value={selectedEvent.start_time} onChange={(e) => setSelectedEvent({...selectedEvent, start_time: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="time" value={selectedEvent.start_time} onChange={(e) => setSelectedEvent({...selectedEvent, start_time: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>End Time</Form.Label>
-                                    <Form.Control type="time" value={selectedEvent.end_time} onChange={(e) => setSelectedEvent({...selectedEvent, end_time: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="time" value={selectedEvent.end_time} onChange={(e) => setSelectedEvent({...selectedEvent, end_time: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Location</Form.Label>
-                                    <Form.Control type="text" value={selectedEvent.location} onChange={(e) => setSelectedEvent({...selectedEvent, location: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="text" value={selectedEvent.location} onChange={(e) => setSelectedEvent({...selectedEvent, location: e.target.value})} />
                                 </Form.Group>
                             </Form>
                         ) : (
@@ -751,18 +815,28 @@ function ClubPage(){
                     {selectedPost && (
                         isEditPostMode ? (
                             <Form>
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                    {previewPostImage && <img src={previewPostImage} alt="Preview" style={{ width: '60%', height: '60%', objectFit: 'cover' }} />}
+                                </div>
+                                <input type='file' name='post_picture' onChange={handlePostFileChange}ref={filePostInputRef}accept="image/*"style={{ display: 'none' }}/>
+                                <div onClick={() => filePostInputRef.current.click()} style={{ cursor: 'pointer' }}>
+                                    <button type='button' style={{borderRadius:'10px'}}>Click to change post image</button>
+                                </div>
                                 <Form.Group>
                                     <Form.Label>Post Name</Form.Label>
-                                    <Form.Control type="text" value={selectedPost.post_name} onChange={(e) => setSelectedPost({...selectedPost, post_name: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="text" value={selectedPost.post_name} onChange={(e) => setSelectedPost({...selectedPost, post_name: e.target.value})} />
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Content</Form.Label>
-                                    <Form.Control type="text" value={selectedPost.content} onChange={(e) => setSelectedPost({...selectedPost, content: e.target.value})} />
+                                    <Form.Control style={{backgroundColor:"lightgrey"}} type="text" value={selectedPost.content} onChange={(e) => setSelectedPost({...selectedPost, content: e.target.value})} />
                                 </Form.Group>
                             </Form>
                         ) : (
                             <>
                                 <h3>{selectedPost.post_name}</h3>
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                    {selectedPost.post_image && <img src={selectedPost.post_image} alt={`${selectedPost.post_name} picture`} style={{ width: '60%', height: '60%', objectFit: 'cover' }} />}
+                                </div>
                                 <p>{selectedPost.content}</p>
                                 <p>{new Date(selectedPost.created_at).toLocaleDateString('en-US', dateOptions)}</p>
                             </>
@@ -770,7 +844,7 @@ function ClubPage(){
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    {isAttending ? (
+                    {isAdmin || isOwner ? (
                         <>
                             {isEditPostMode ? (
                                 <Button variant="success" onClick={handleSavePostEdit} >

@@ -6,6 +6,7 @@ class User < ApplicationRecord
     has_many :posts, foreign_key: 'user_id'
     has_many :event_attendances
     has_many :events, through: :event_attendances, source: :event
+    has_one_attached :profile_picture
 
     has_many :owned_clubs, class_name: 'Club', foreign_key: 'owner_id'
 

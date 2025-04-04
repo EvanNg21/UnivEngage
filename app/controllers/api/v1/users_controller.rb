@@ -6,18 +6,20 @@ module Api
 
             def index
                 users = User.all
-                render json: { status: "SUCCESS", users: users }, status: :ok
+                render json: users.map { |user| user.as_json.merge(profile_picture_url: user.profile_picture.attached? ? url_for(user.profile_picture) : nil) }, status: :ok
             end
 
             def show
-                render json: { status: "SUCCESS", user: @user }, status: :ok
+                @user = User.find(params[:id])
+                render json: @user.as_json.merge(profile_picture_url: @user.profile_picture.attached? ? url_for(@user.profile_picture) : nil), status: :ok
             end
 
             def update
+                @user = User.find(params[:id])
                 if @user.update(user_params)
-                    render json: { status: "SUCCESS", user: @user }, status: :ok
+                  render json: { user: @user }, status: :ok
                 else
-                    render json: { status: "ERROR", user: @user.errors }, status: :unprocessable_entity
+                  render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
                 end
             end
 
@@ -55,7 +57,7 @@ module Api
             end
 
             def user_params # only allow a list of trusted parameters through
-                params.require(:user).permit(:email, :password, :first_name, :last_name, :bio, :date_of_birth, :profile_picture, :username)
+                params.require(:user).permit(:email, :password, :first_name, :last_name, :bio, :date_of_birth, :username, :profile_picture)
             end
         end
     end

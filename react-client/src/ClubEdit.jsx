@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import React from 'react';
 import Button from 'react-bootstrap/esm/Button';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -13,8 +13,7 @@ function ClubEdit() {
             club_id: '',
             club_name: '',
             owner_id: '',
-            members: 0,
-            description: '',
+            description: ''
     });
 
     const [ownerData, setOwnerData] = useState({
@@ -37,11 +36,23 @@ function ClubEdit() {
         if (userId == clubData.owner_id) {
             setOwner(true);
         }
-    }, []);
+    }, [userId, clubData.owner_id]);
     
+    const [clubPicture, setClubPicture] = useState(null);
+    const [previewImage, setPreviewImage] = useState('');
+    const fileInputRef = useRef(null);
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setClubPicture(file);
+            // Create a preview URL for the selected file
+            setPreviewImage(URL.createObjectURL(file));
+        }
+    };
 
     useEffect(() => {
-        const fetchUserData = async () => {
+        const fetchClubData = async () => {
             if (!token) {
                 console.error('Token not found');
                 return;
@@ -57,23 +68,30 @@ function ClubEdit() {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('API Response:', data); // Debugging
-                    setClubData({
-                        club_id: data.club.club_id,
-                        club_name: data.club.club_name,
-                        owner_id: data.club.owner_id,
-                        members: data.club.members,
-                        description: data.club.description
-                    });
+                    const club = Array.isArray(data) ? 
+                        data.find(u => u.club_id === parseInt(clubId)) : 
+                        data;
+                    console.log('Club Data Response:', clubData); // Debugging
+                    if (club){
+                        setClubData({
+                            club_name: club.club_name || '',
+                            description: club.description || '',
+                            owner_id: club.owner_id || '',
+                            club_id: club.club_id||'',
+                        });
+                        if (club.club_picture_url) {
+                            setPreviewImage(club.club_picture_url);
+                        }
+                    }
                 } else {
-                    console.error('Failed to fetch user data');
+                    console.error('Failed to fetch club data');
                 }
             } catch (error) {
-                console.error('Error fetching user data:', error);
+                console.error('Error fetching club data:', error);
             }
         };
-        fetchUserData();
-    }, [clubId]);
+        fetchClubData();
+    }, [clubId, token]);
 
     //members
     useEffect(() => {
@@ -114,18 +132,23 @@ function ClubEdit() {
  
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // Perform form submission logic here
+        const formData = new FormData();
+        formData.append('club[club_name]', clubData.club_name);
+        formData.append('club[description]', clubData.description);
+    
+        if (clubPicture) {
+            formData.append('club[club_picture]', clubPicture);
+        }
         try{
             const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}`,{
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify(clubData),
+                body: formData,
             });
             if (response.ok){
-                console.log('User data changed succesfully');
+                console.log('club data changed succesfully');
                 Navigate(`/clubPage/${clubId}`);
             } else{
                 console.error('Failed to update club data');
@@ -147,11 +170,11 @@ function ClubEdit() {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Fetched data:", data);
+                    console.log("Fetched owner data:", data);
                     setOwnerData({
-                        first_name: data.user.first_name,
-                        last_name: data.user.last_name,
-                        email: data.user.email  
+                        first_name: data.first_name,
+                        last_name: data.last_name,
+                        email: data.email  
                     });
                 } else {
                     console.error("HTTP error: ", response.status);
@@ -214,16 +237,29 @@ function ClubEdit() {
           console.error('Error demoteing user to member:', error);
         }
       };
+
+      useEffect(() => {
+        return () => {
+          if (previewImage && previewImage.startsWith('blob:')) {
+            URL.revokeObjectURL(previewImage);
+          }
+        };
+      }, []);
     
     
     return (
         <div className='base-page'>
             <header className='profile-header'>
-                <h1 className="clubfade">Club Name: <input style={{color: 'white'}} type="text" name= "club_name" placeholder="club_name" value={clubData.club_name} onChange={handleInputChange}/></h1>
+                <h1 className="clubfade">Club Name: <input style={{color: 'white'}} type="text" name= "club_name" placeholder="club_name" value={clubData.club_name} onChange={handleInputChange}/>
+                    <img src={previewImage || '/default-club.png'} alt="Club" style={{width: '150px',height: '150px',borderRadius: '75px',objectFit: 'cover' }}/>
+                </h1>
+                <input type='file' name='club_picture' onChange={handleFileChange}ref={fileInputRef}accept="image/*"style={{ display: 'none' }}/>
+                <div onClick={() => fileInputRef.current.click()} style={{ cursor: 'pointer' }}>
+                    <button style={{borderRadius:'10px'}}>Click to change club picture</button>
+                </div>
                 <h2>Club Description: <input style={{color: 'white'}} type="text" name= "description" placeholder="description" value={clubData.description} onChange={handleInputChange}/> </h2>
             </header>
             <div className='profile-body'>
-                <p>Club Owner: {ownerData.first_name} {ownerData.last_name}, {ownerData.email}</p>
                 <p>Members:</p>
                 {memberData.length > 0 ? (
                   <ul>
