@@ -522,7 +522,7 @@ function ClubPage(){
     return (
         <div className='base-page'>
             <header className='profile-header'>
-                <h1 className="clubfade">{clubData.club_name} <img src={previewImage || '/default-club.png'} alt="club" style={{width: '150px',height: '150px',borderRadius: '75px',objectFit: 'cover' }}/></h1>
+                <h1 className="clubfade">{clubData.club_name} <img src={previewImage || ""}  style={{width: '150px',height: '150px',borderRadius: '75px',objectFit: 'cover' }}/></h1>
                 {isMember ? (
                   <p> you are a member</p>
                 ):(

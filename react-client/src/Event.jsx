@@ -54,7 +54,7 @@ useEffect(() => {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setClubData(Array.isArray(data) ? data : [data]); // Ensure clubData is an array
+                    setClubInfo(Array.isArray(data) ? data : [data]); // Ensure clubData is an array
                     console.log('Club Data Response:', data);
                 } else {
                     console.error('Failed to fetch club data');
