@@ -6,8 +6,17 @@ function Edit() {
     const [userEmail, setUserEmail] = useState('');
     const token = localStorage.getItem('token');
     const { userId } = useParams();
-    const Navigate = useNavigate();
+    const navigate = useNavigate();
     const fileInputRef = useRef(null);
+    const loggedInUser = localStorage.getItem('id');
+
+
+    useEffect(() => {
+        if (parseInt(userId) !== parseInt(loggedInUser)) {
+            navigate(`/profile/${loggedInUser}`);
+            alert("You can only edit your own profile");
+        }
+    }, [userId, loggedInUser]);
 
     const [userData, setUserData] = useState({
         username: '',

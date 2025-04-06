@@ -66,7 +66,18 @@ module Api
   
         def show
           @club = Club.find(params[:id])
-          render json: @club.as_json.merge(club_picture_url: @club.club_picture.attached? ? url_for(@club.club_picture) : nil), status: :ok
+          club_data = @club.as_json.merge(club_picture_url: @club.club_picture.attached? ? url_for(@club.club_picture) : nil)
+          club_data["members"] = club_data["members"].map do |member|
+            {
+              user_id: member["user_id"],
+              username: member["username"],
+              email: member["email"],
+              first_name: member["first_name"],
+              last_name: member["last_name"],
+            }
+          end
+        
+          render json: club_data, status: :ok
         end
   
         def update

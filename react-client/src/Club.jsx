@@ -64,10 +64,10 @@ function Club(){
             {clubData.length > 0 ? (
                 clubData.map(club => (
                     <div key={club.club_id}>
-                        <Nav.Link href={`/clubPage/${club.club_id}`} style={{fontSize: '30px'}}>{club.club_name} {club.club_picture_url && <img src={club.club_picture_url} alt={`${club.club_name} picture`} style={{ width: '50px', height: '50px', borderRadius: '75px', objectFit: 'cover' }} />}</Nav.Link>
+                        <Nav.Link href={`/clubPage/${club.club_id}`} style={{fontSize: '30px'}}>{club.club_picture_url && <img src={club.club_picture_url} alt={`${club.club_name} picture`} style={{ width: '80px', height: '80px', borderRadius: '75px', objectFit: 'cover' }} />} {club.club_name} </Nav.Link>
                         <p>Description: {club.description}</p>
-                        <p>Created At: {new Date(club.created_at).toLocaleString()}</p>
-                        <p>Updated At: {new Date(club.updated_at).toLocaleString()}</p>
+                        <p style={{fontSize: '15px'}}>Created At: {new Date(club.created_at).toLocaleString()}</p>
+                        <p style={{fontSize: '15px'}}>Updated At: {new Date(club.updated_at).toLocaleString()}</p>
                         <p>_____________________________________________________</p>
                     </div>
                 ))
