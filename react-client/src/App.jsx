@@ -205,7 +205,7 @@ const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '
           <p>No events available</p>
       )}
       </div>
-      <button style={{ display:"flex", marginLeft:"auto", marginRight:"10px" }} onClick={() => window.location.href = '/events'}>More Events</button>
+      <button style={{ display:"flex", marginLeft:"auto", marginRight:"10px", borderRadius: "5px" }} onClick={() => window.location.href = '/clubs'}>More Clubs</button>
     </div>
 
     <div className="home-body">
