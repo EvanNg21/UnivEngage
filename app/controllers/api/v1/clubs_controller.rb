@@ -44,22 +44,12 @@ module Api
         def leave
           club = Club.find(params[:id])
           user = User.find(params[:user_id])
-        
-          # Use destroy instead of delete to trigger callbacks
           membership = club.club_members.find_by(user_id: user.id)
           
           if membership&.destroy
-            render json: { 
-              status: 'SUCCESS', 
-              message: 'User left the club',
-              member_count: club.reload.member_count # Return fresh count
-            }
+            render json: { status: 'SUCCESS', message: 'User left the club',member_count: club.reload.member_count}
           else
-            render json: { 
-              status: 'ERROR', 
-              message: 'Failed to leave the club',
-              errors: membership&.errors&.full_messages
-            }, status: :unprocessable_entity
+            render json: { status: 'ERROR', message: 'Failed to leave the club',errors: membership&.errors&.full_messages}, status: :unprocessable_entity
           end
         end
   

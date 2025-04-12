@@ -63,12 +63,11 @@ function Club(){
         <div className="clubs-display">
             {clubData.length > 0 ? (
                 clubData.map(club => (
-                    <div key={club.club_id}>
+                    <div key={club.club_id} style={{ margin: '10px', flex: '0 0 20%', backgroundColor: 'lightgrey', padding: '10px', borderRadius: '5px', width: "95%" }}>
                         <Nav.Link href={`/clubPage/${club.club_id}`} style={{fontSize: '30px'}}>{club.club_picture_url && <img src={club.club_picture_url} alt={`${club.club_name} picture`} style={{ width: '80px', height: '80px', borderRadius: '75px', objectFit: 'cover' }} />} {club.club_name} </Nav.Link>
                         <p>Description: {club.description}</p>
                         <p style={{fontSize: '15px'}}>Created At: {new Date(club.created_at).toLocaleString()}</p>
                         <p style={{fontSize: '15px'}}>Updated At: {new Date(club.updated_at).toLocaleString()}</p>
-                        <p>_____________________________________________________</p>
                     </div>
                 ))
             ) : (

@@ -3,6 +3,8 @@ import './App.css';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/esm/Button';
 import Clubs from './Club';
 import Events from './Event';
 import CreateClub from './CreateClub';
@@ -100,11 +102,7 @@ function Home() {
       setShowEventInfo(true);
   };
 
-  const handleShowPostInfo = (post) => {
-    setSelectedPost(post);
-    setShowPostInfo(true);
-};
-
+ 
 const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
   
 
@@ -189,6 +187,28 @@ const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '
     </div>
 
     <div className="home-body">
+      <h2>Top Clubs</h2>
+      <div style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', backgroundColor: 'white', justifyContent:"center" }}>
+      {Array.isArray(clubInfo) && clubInfo.length > 0 ? (
+          clubInfo.sort((a, b) => (b.member_count) - (a.member_count)).slice(0,4).map(club => {
+              return (
+                <div key={club.club_id} style={{ margin: '10px', flex: '0 0 20%', backgroundColor: 'lightgrey', padding: '10px', borderRadius: '5px', width: "300px" }}>
+                  <Nav.Link href={`/clubPage/${club.club_id}`} style={{fontSize: '30px', borderRadius: '5px', backgroundColor: "#1f1e1e", color: "white"}}>{club.club_picture_url && <img src={club.club_picture_url} alt={`${club.club_name} picture`} style={{ width: '80px', height: '80px', borderRadius: '75px', objectFit: 'cover' }} />} {club.club_name} </Nav.Link>
+                  <p>Description: {club.description}</p>
+                  <p>Members: {club.member_count}</p>
+                  <p style={{fontSize: '15px'}}>Created At: {new Date(club.created_at).toLocaleString()}</p>
+                  <p style={{fontSize: '15px'}}>Updated At: {new Date(club.updated_at).toLocaleString()}</p>
+                </div>
+              );
+          })
+      ) : (
+          <p>No events available</p>
+      )}
+      </div>
+      <button style={{ display:"flex", marginLeft:"auto", marginRight:"10px" }} onClick={() => window.location.href = '/events'}>More Events</button>
+    </div>
+
+    <div className="home-body">
       <h2>Latest Events</h2>
       <div style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', backgroundColor: 'white', justifyContent:"center" }}>
       {Array.isArray(events) && events.length > 0 ? (
@@ -208,8 +228,46 @@ const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '
           <p>No events available</p>
       )}
       </div>
-      <button style={{ display:"flex", marginLeft:"auto", marginRight:"10px" }} onClick={() => window.location.href = '/events'}>More Events</button>
+      <button style={{ display:"flex", marginLeft:"auto", marginRight:"10px", borderRadius:"5px" }} onClick={() => window.location.href = '/events'}>More Events</button>
     </div>
+
+    {/* Event info pop out input */}
+    <Modal show={showEventInfo} onHide={closeEventInfo}>
+        <Modal.Header closeButton>
+            <Modal.Title>Event Information</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            {selectedEvent && (    
+                <>
+                    <h3>{selectedEvent.event_name}</h3>
+                    <p>
+                        Club: {
+                            (() => {
+                                const club = clubInfo.find((club) => club.club_id === selectedEvent.club_id);
+                                return club ? club.club_name : 'Unknown Club';
+                            })()
+                        }
+                    </p>
+                    <p>{selectedEvent.description}</p>
+                    <p>Date: {new Date(selectedEvent.event_date).toLocaleDateString('en-US', dateOptions)}</p>
+                    <p>Time: {new Date(selectedEvent.start_time).toLocaleTimeString('en-US', dateOptions)} - {new Date(selectedEvent.end_time).toLocaleTimeString('en-US', dateOptions)}</p>
+                    <p>Location: {selectedEvent.location}</p>
+                </>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+            {selectedEvent && (
+                <>
+                    <Button href={`/clubPage/${selectedEvent.club_id}`}variant="primary" onClick={closeEventInfo}>
+                        Visit Club
+                    </Button>
+                    <Button variant="danger" onClick={closeEventInfo}>
+                        Close
+                    </Button>
+                </>
+            )}
+        </Modal.Footer>
+    </Modal>
   </div>
   );
 }
