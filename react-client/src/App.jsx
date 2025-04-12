@@ -89,6 +89,93 @@ function App() {
 
 
 function Home() {
+  const[posts, setPosts] = useState([]);
+  const[events,setEvents] = useState([]);
+  const[clubInfo,setClubInfo] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showEventInfo, setShowEventInfo] = useState(false);
+  const closeEventInfo = () => setShowEventInfo(false);
+  const handleShowEventInfo = (event) => {
+      setSelectedEvent(event);
+      setShowEventInfo(true);
+  };
+
+  const handleShowPostInfo = (post) => {
+    setSelectedPost(post);
+    setShowPostInfo(true);
+};
+
+const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+  
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+        try{
+            const response = await fetch('http://127.0.0.1:3000/api/v1/events', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            if (response.ok) {
+                const json = await response.json();
+                setEvents(json.events);
+                console.log("succuess  ", json);
+            } else {
+                throw response;
+            } 
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+        }
+    }
+    fetchEvents();
+  },[])
+
+  useEffect(() => {
+    const fetchClubData = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setClubInfo(Array.isArray(data) ? data : [data]); // Ensure clubData is an array
+                console.log('Club Data Response:', data);
+            } else {
+                console.error('Failed to fetch club data');
+            }
+        } catch (error) {
+            console.error('Error fetching club data:', error);
+        }
+    };
+    fetchClubData();
+  }, []);
+
+  useEffect(() => {
+    const fetchPosts = async () =>{
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/posts`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Posts Data:', data);
+                setPosts(data);
+            } else {
+                console.error('Failed to fetch post data');
+            }
+        } catch (error) {
+            console.error('Error fetching post data:', error);
+        }
+    };
+    fetchPosts();
+  }, []);
   return (
   <div>
 
@@ -102,8 +189,26 @@ function Home() {
     </div>
 
     <div className="home-body">
-      <h2>This is a new section with a different color!</h2>
-      <p>You can add more content here.</p>
+      <h2>Latest Events</h2>
+      <div style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', backgroundColor: 'white', justifyContent:"center" }}>
+      {Array.isArray(events) && events.length > 0 ? (
+          events.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0,4).map(event => {
+              const club = clubInfo.find((club) => club.club_id === event.club_id);
+              return (
+              <div key={event.event_id} style={{ margin: '10px', flex: '0 0 20%', backgroundColor: 'lightgrey', padding: '10px', borderRadius: '5px', width: "300px" }}>
+                  <button style={{borderRadius:"10px", width:"100%", fontSize: "20px"}} onClick={() => handleShowEventInfo(event)}>{event.event_name}</button>
+                  <p>Club: {club ? club.club_name : 'Unknown Club'}</p>
+                  <p>Description: {event.description}</p>
+                  <p>Created At: {new Date(event.created_at).toLocaleString()}</p>
+                  <p>Updated At: {new Date(event.updated_at).toLocaleString()}</p>
+              </div>
+              );
+          })
+      ) : (
+          <p>No events available</p>
+      )}
+      </div>
+      <button style={{ display:"flex", marginLeft:"auto", marginRight:"10px" }} onClick={() => window.location.href = '/events'}>More Events</button>
     </div>
   </div>
   );

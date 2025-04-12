@@ -428,7 +428,7 @@ function ClubPage(){
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Posts Data:', data); // Debugging
+                    console.log('Posts Data:', data);
                     const filterPosts = data.filter(post => post.club_id === parseInt(clubId));
                     setPostDisplay(filterPosts);
                     console.log('Filtered posts:', postDisplay);

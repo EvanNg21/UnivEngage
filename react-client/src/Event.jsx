@@ -70,6 +70,7 @@ useEffect(() => {
     <div className = 'base-page'>
         <div className='club-container'> 
             <h1 className="clubfade">Events </h1>
+            <p>Explore different events from various clubs!</p>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', backgroundColor: 'white', justifyContent:"center" }}>
         {events.length > 0 ? (

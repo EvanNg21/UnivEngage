@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_04_03_031445) do
+ActiveRecord::Schema[7.2].define(version: 2025_04_12_053850) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -52,11 +52,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_03_031445) do
 
   create_table "clubs", primary_key: "club_id", force: :cascade do |t|
     t.string "club_name"
-    t.integer "members"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "owner_id"
+    t.integer "members"
+    t.integer "member_count"
   end
 
   create_table "event_attendances", force: :cascade do |t|
