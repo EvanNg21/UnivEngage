@@ -194,6 +194,25 @@ function ClubPage(){
             console.log("An error has occurred: ", e);
         }
     };
+//leave club
+    const handleLeave = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/clubs/${clubId}/leave`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: loggedinUser })
+            });
+            if (response.ok) {
+                setIsMember(false);
+            } else {
+                console.error("HTTP error: ", response.status);
+            }
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+        }
+    }
 
     //get users attending event________________________________________________________________________________________________
     useEffect(() => {
@@ -523,15 +542,25 @@ function ClubPage(){
         <div className='base-page'>
             <header className='profile-header'>
                 <h1 className="clubfade"><img src={previewImage || ""}  style={{width: '150px',height: '150px',borderRadius: '75px',objectFit: 'cover' }}/> {clubData.club_name}</h1>
-                {isMember ? (
-                  <p> you are a member</p>
-                ):(
-                  <>
-                  {loggedinUser? ( 
-                    <Button onClick={handleJoin} style={{width:'100px'}} variant="primary">Join!</Button>
-                    ):(
-                    <Button href='/login'style={{width:'300px'}} variant="primary">You need to log in to join a club</Button>)}
-                  </> 
+                {isOwner?(
+                    <>
+                    <p>you are the owner</p>
+                    </>
+                ) : (
+                    <>
+                        {isMember ? (
+                            <>
+                                <p> you are a member <Button onClick={handleLeave}>Leave</Button></p>
+                            </>
+                        ):(
+                        <>
+                        {loggedinUser? ( 
+                            <Button onClick={handleJoin} style={{width:'100px'}} variant="primary">Join!</Button>
+                            ):(
+                            <Button href='/login'style={{width:'300px'}} variant="primary">You need to log in to join a club</Button>)}
+                        </> 
+                        )}
+                    </>
                 )}
                 <h2>Club Description: {clubData.description}</h2>
             </header>

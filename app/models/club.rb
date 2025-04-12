@@ -1,5 +1,5 @@
 class Club < ApplicationRecord
-    has_many :club_members
+    has_many :club_members, dependent: :destroy
     has_many :members, through: :club_members, source: :user
     has_many :events
     has_many :posts, foreign_key: 'club_id'

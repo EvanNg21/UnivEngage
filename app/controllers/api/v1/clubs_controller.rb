@@ -43,12 +43,23 @@ module Api
   
         def leave
           club = Club.find(params[:id])
-          user = User.find(params[:user_id]) # Assuming user_id is passed in the request
-  
-          if club.members.delete(user)
-            render json: { status: 'SUCCESS', message: 'User left the club' }
+          user = User.find(params[:user_id])
+        
+          # Use destroy instead of delete to trigger callbacks
+          membership = club.club_members.find_by(user_id: user.id)
+          
+          if membership&.destroy
+            render json: { 
+              status: 'SUCCESS', 
+              message: 'User left the club',
+              member_count: club.reload.member_count # Return fresh count
+            }
           else
-            render json: { status: 'ERROR', message: 'Failed to leave the club' }, status: :unprocessable_entity
+            render json: { 
+              status: 'ERROR', 
+              message: 'Failed to leave the club',
+              errors: membership&.errors&.full_messages
+            }, status: :unprocessable_entity
           end
         end
   
@@ -60,13 +71,13 @@ module Api
         end
   
         def index
-          clubs = Club.select(:club_id, :club_name, :description, :created_at, :updated_at, :owner_id)
+          clubs = Club.select(:club_id, :club_name, :description, :created_at, :updated_at, :owner_id, :member_count)
           render json: clubs.map { |club| club.as_json.merge(club_picture_url: club.club_picture.attached? ? url_for(club.club_picture) : nil) }, status: :ok
         end
   
         def show
           @club = Club.find(params[:id])
-          club_data = @club.as_json.merge(club_picture_url: @club.club_picture.attached? ? url_for(@club.club_picture) : nil)
+          club_data = @club.as_json.merge(club_picture_url: @club.club_picture.attached? ? url_for(@club.club_picture) : nil,)
           club_data["members"] = club_data["members"].map do |member|
             {
               user_id: member["user_id"],
@@ -115,7 +126,7 @@ module Api
         end
   
         def club_params # only allow a list of trusted parameters through
-          params.require(:club).permit(:club_name, :club_id, :owner_id, :members, :description, :club_picture)
+          params.require(:club).permit(:club_name, :club_id, :owner_id, :members, :description, :club_picture, :member_count)
         end
       end
     end

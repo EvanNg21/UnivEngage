@@ -57,7 +57,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_12_053850) do
     t.datetime "updated_at", null: false
     t.string "owner_id"
     t.integer "members"
-    t.integer "member_count"
+    t.integer "member_count", default: 1
   end
 
   create_table "event_attendances", force: :cascade do |t|

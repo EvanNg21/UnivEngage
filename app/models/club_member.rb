@@ -1,6 +1,6 @@
 class ClubMember < ApplicationRecord
     belongs_to :user
-    belongs_to :club
+    belongs_to :club, counter_cache: :member_count
 
     ROLES = ['member', 'admin']
 
