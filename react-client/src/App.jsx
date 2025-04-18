@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, Navigate, useParams} from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useParams, useNavigate, Navigate} from 'react-router-dom';
 import './App.css';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -14,6 +14,7 @@ import Profile from './Profile';
 import Edit from './Edit';
 import ClubPage from './ClubPage';
 import ClubEdit from './ClubEdit';
+import Search from './Search';
 import React, { useState, useEffect } from 'react';
 function App() {
   const[isLoggedIn, setIsLoggedIn] = useState(false);
@@ -40,6 +41,19 @@ function App() {
     setIsLoggedIn(false);
     setUserEmail('');
   };
+
+
+  const [searchInput, setSearchInput] = useState('');
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const searchQuery = searchInput.trim();
+    console.log("searching",searchInput.toLowerCase());
+    if (!searchQuery){
+      return;
+    }
+    window.location.href = `/search/${searchInput}`
+  }
+  
   
   return (
     <BrowserRouter>
@@ -54,7 +68,9 @@ function App() {
                 <Nav.Link style={{color:'black'}}href="/">Campus Resources</Nav.Link>
               </Nav>
               <Nav className = "navsignup">
-                <input className ="search-bar"type="text" placeholder="Search for Clubs, Events or more"/>
+                <form onSubmit={handleSearch}>
+                  <input className ="search-bar"type="text" placeholder="Search for Clubs, Events or more" value={searchInput} onChange={(e) => setSearchInput(e.target.value)}/>
+                </form>
                 {isLoggedIn ? (
                   <>
                   <Nav.Link style={{color:'black'}} href={`/profile/${userId}`}>{userEmail}</Nav.Link>
@@ -82,6 +98,7 @@ function App() {
           <Route path="/profile/edit/:userId" element={<Edit />} />
           <Route path="/clubPage/:clubId" element={<ClubPage />} />
           <Route path="/clubPage/edit/:clubId" element={<ClubEdit />} />
+          <Route path="/search/:searchInput" element={<Search />} />
       </Routes>
     </BrowserRouter>
  
