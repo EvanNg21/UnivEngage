@@ -5,6 +5,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 function Event(){
 
@@ -65,6 +66,39 @@ useEffect(() => {
         };
         fetchClubData();
     }, []);
+
+    const [eventCriteria, setEventCriteria] = useState('Date Created Descending');
+    const sortEvents = (eventCriteria) => {
+        setEventCriteria(eventCriteria);
+    }
+    const sortedEvents = [...events].sort((a, b) => {
+        if (eventCriteria === 'Date Created Descending') {
+            return new Date(b.created_at) - new Date(a.created_at);
+        } else if (eventCriteria === 'Date Created Ascending') {
+            return new Date(a.created_at) - new Date(b.created_at);
+        } else if (eventCriteria === 'Date Updated Ascending') {
+            return new Date(a.updated_at) - new Date(b.updated_at);
+        } else if (eventCriteria === 'Date Updated Descending') {
+            return new Date(b.updated_at) - new Date(a.updated_at);
+        }
+    })
+    const [currentEventPage, setCurrentEvent] = useState(1);
+    const eventsPerPage = 8;
+    const startEventIndex = (currentEventPage - 1) * eventsPerPage;
+    const endEventIndex = startEventIndex + eventsPerPage;
+    const currentEvents = sortedEvents.slice(startEventIndex, endEventIndex);
+
+    const handleNextEvents = () => {
+        if (currentEventPage < Math.ceil(events.length / eventsPerPage)) {
+            setCurrentEvent(prevPage => prevPage + 1);
+        }
+    }
+
+    const handlePreviousEvents = () => {
+        if (currentEventPage > 1) {
+            setCurrentEvent(prevPage => prevPage - 1);
+        }
+    }
         
     return(
     <div className = 'base-page'>
@@ -72,9 +106,20 @@ useEffect(() => {
             <h1 className="clubfade">Events </h1>
             <p>Explore different events from various clubs!</p>
         </div>
+        <Dropdown style={{paddingTop:"10px",paddingLeft:"25px", backgroundColor: "white"}}>
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+                Sort by
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+                <Dropdown.Item style={{backgroundColor: 'lightgrey'}} onClick ={() => sortEvents('Date Created Ascending')}>Date Created Ascending</Dropdown.Item>
+                <Dropdown.Item style={{backgroundColor: 'lightgrey'}}onClick ={() => sortEvents('Date Created Descending')}>Date Created Descending</Dropdown.Item>
+                <Dropdown.Item onClick ={() => sortEvents('Date Updated Ascending')}>Date Updated Ascending</Dropdown.Item>
+                <Dropdown.Item onClick ={() => sortEvents('Date Updated Descending')}>Date Updated Descending</Dropdown.Item>
+            </Dropdown.Menu>
+        </Dropdown>
         <div style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', backgroundColor: 'white', justifyContent:"center" }}>
         {events.length > 0 ? (
-                events.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map(event => {
+                currentEvents.map(event => {
                     const club = clubInfo.find((club) => club.club_id === event.club_id);
                     return(
                     <div key={event.event_id} style={{ margin: '10px', flex: '0 0 23%', backgroundColor: 'lightgrey', padding: '10px', borderRadius: '5px' }}>
@@ -90,7 +135,11 @@ useEffect(() => {
                 <p>No events available</p>
             )}
         </div>
-
+        <div  style={{justifyContent: 'center', alignItems: 'center', display:"flex", margin:"auto", bottom: 0, backgroundColor: "white" }}>
+            <Button style={{backgroundColor:"black", borderColor:"black", width: "100px"}} onClick={handlePreviousEvents} disabled={currentEventPage === 1}>Previous</Button>
+            <p style={{margin:"10px"}}>Page {currentEventPage} of {Math.ceil(events.length / eventsPerPage)}</p>
+            <Button style={{backgroundColor:"black", borderColor:"black", width:"100px"}} onClick={handleNextEvents} disabled={currentEventPage >= Math.ceil(events.length / eventsPerPage)}>Next</Button>
+        </div>
         {/* Event info pop out input */}
         <Modal show={showEventInfo} onHide={closeEventInfo}>
                 <Modal.Header closeButton>

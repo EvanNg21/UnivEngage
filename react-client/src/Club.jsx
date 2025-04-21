@@ -91,7 +91,7 @@ function Club(){
     <div className = 'base-page'>
         <div className='club-container'> 
             <h1 className="clubfade">Clubs </h1>
-            <p>Explore all kinds of different clubs!</p>
+            <p>Explore all kinds of interesting clubs!</p>
             <Button onClick={createClub} variant="primary">Create a Club!</Button>
         </div>
         <div className="clubs-display">

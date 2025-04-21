@@ -57,7 +57,7 @@ function App() {
   
   return (
     <BrowserRouter>
-        <Navbar  className="navbar">
+        <Navbar  className="navbar" style={{position:"fixed", top:0, zIndex:100}}>
             <Navbar.Brand className='univengage' href="/home"  >Univengage</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Nav className="ms-auto">
