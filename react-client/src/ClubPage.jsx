@@ -575,7 +575,7 @@ function ClubPage(){
                 )}</h1>
                 {postDisplay.length > 0 ? (
                     <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', width: "100%"}}>
-                        {postDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                        {postDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0,4)
                         .map((post) => (
                             <li key={post.post_id} style={{ margin: '10px', flex: '0 0 20%', backgroundColor: 'white', padding: '10px', borderRadius: '5px'}}>
                                 <button style={{borderRadius:"10px", width:"100%"}} onClick={() => handleShowPostInfo(post)}>
@@ -590,7 +590,7 @@ function ClubPage(){
                 ) : (
                     <p>No posts found</p>
                 )}
-                
+                <button type='button' style={{justifyContent:"left", marginLeft: 'auto', marginRight: '14%', borderRadius:"10px"}}>More Posts</button>
             </div>
             <div style={{backgroundColor:"grey", maxHeight: "100vh"}}className='profile-body'>
                 <h1>Events {isAdmin || isOwner ? (
