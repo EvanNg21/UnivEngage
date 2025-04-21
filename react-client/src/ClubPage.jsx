@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Button from 'react-bootstrap/esm/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import Dropdown from 'react-bootstrap/Dropdown';
 function ClubPage(){
     const { clubId } = useParams();
     const loggedinUser = localStorage.getItem('id');
@@ -14,36 +15,11 @@ function ClubPage(){
     const [attendanceData, setAttendanceData] = useState([]);
     const [isAttending, setIsAttending] = useState(false);
     
-    const [clubData, setClubData] = useState({
-        club_id: '',
-        club_name: '',
-        owner_id: '',
-        members: [],
-        description: '',
-        club_picture_url: '',
-    });
+    const [clubData, setClubData] = useState([]);
 
-    const [eventData, setEventData] = useState({
-        event_id: '',
-        event_name: '',
-        description: '',
-        event_date: '',
-        start_time: '',
-        end_time: '',
-        location: '',
-    });
+    const [eventData, setEventData] = useState([]);
 
-    const [postData, setPostData] = useState({
-        post_id: '',
-        post_name: '',
-        content: '',
-        user_id: '',
-        club_id: '',
-        views_count: '',
-        likes_count: '',
-        comments_count: '',
-        post_image: '',
-    });
+    const [postData, setPostData] = useState([]);
 
     const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
 
@@ -536,8 +512,76 @@ function ClubPage(){
             alert("error updating post");
         }
     };
-    
-    
+    //Post Pages and Sort____________________________________________________________________________________________________________
+
+    const [postCriteria, setPostCriteria] = useState('Date Created Descending');
+    const sortPosts = (postCriteria) => {
+        setPostCriteria(postCriteria);
+    }
+    const sortedPosts = [...postDisplay].sort((a, b) => {
+        if (postCriteria === 'Date Created Descending') {
+            return new Date(b.created_at) - new Date(a.created_at);
+        } else if (postCriteria === 'Date Created Ascending') {
+            return new Date(a.created_at) - new Date(b.created_at);
+        } else if (postCriteria === 'Date Updated Ascending') {
+            return new Date(a.updated_at) - new Date(b.updated_at);
+        } else if (postCriteria === 'Date Updated Descending') {
+            return new Date(b.updated_at) - new Date(a.updated_at);
+        }
+    })
+    const [currentPostPage, setCurrentPost] = useState(1);
+    const postsPerPage = 4;
+    const startPostIndex = (currentPostPage - 1) * postsPerPage;
+    const endPostIndex = startPostIndex + postsPerPage;
+    const currentPosts = sortedPosts.slice(startPostIndex, endPostIndex);
+
+    const handleNextPosts = () => {
+        if (currentPostPage < Math.ceil(postDisplay.length / postsPerPage)) {
+            setCurrentPost(prevPage => prevPage + 1);
+        }
+    }
+
+    const handlePreviousPosts = () => {
+        if (currentPostPage > 1) {
+            setCurrentPost(prevPage => prevPage - 1);
+        }
+    }
+
+    //Events Pages and Sort____________________________________________________________________________________________________________
+
+    const [eventCriteria, setEventCriteria] = useState('Date Created Descending');
+    const sortEvents = (eventCriteria) => {
+        setEventCriteria(eventCriteria);
+    }
+    const sortedEvents = [...eventDisplay].sort((a, b) => {
+        if (eventCriteria === 'Date Created Descending') {
+            return new Date(b.created_at) - new Date(a.created_at);
+        } else if (eventCriteria === 'Date Created Ascending') {
+            return new Date(a.created_at) - new Date(b.created_at);
+        } else if (eventCriteria === 'Date Updated Ascending') {
+            return new Date(a.updated_at) - new Date(b.updated_at);
+        } else if (eventCriteria === 'Date Updated Descending') {
+            return new Date(b.updated_at) - new Date(a.updated_at);
+        }
+    })
+    const [currentEventPage, setCurrentEvent] = useState(1);
+    const eventsPerPage = 3;
+    const startEventIndex = (currentEventPage - 1) * eventsPerPage;
+    const endEventIndex = startEventIndex + eventsPerPage;
+    const currentEvents = sortedEvents.slice(startEventIndex, endEventIndex);
+
+    const handleNextEvents = () => {
+        if (currentEventPage < Math.ceil(eventDisplay.length / eventsPerPage)) {
+            setCurrentEvent(prevPage => prevPage + 1);
+        }
+    }
+
+    const handlePreviousEvents = () => {
+        if (currentEventPage > 1) {
+            setCurrentEvent(prevPage => prevPage - 1);
+        }
+    }
+
     return (
         <div className='base-page'>
             <header className='profile-header'>
@@ -573,10 +617,20 @@ function ClubPage(){
                   <>
                   </>
                 )}</h1>
+                <Dropdown style={{padding:"10px"}}>
+                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                        Sort by
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item style={{backgroundColor: 'lightgrey'}} onClick ={() => sortPosts('Date Created Ascending')}>Date Created Ascending</Dropdown.Item>
+                        <Dropdown.Item style={{backgroundColor: 'lightgrey'}}onClick ={() => sortPosts('Date Created Descending')}>Date Created Descending</Dropdown.Item>
+                        <Dropdown.Item onClick ={() => sortPosts('Date Updated Ascending')}>Date Updated Ascending</Dropdown.Item>
+                        <Dropdown.Item onClick ={() => sortPosts('Date Updated Descending')}>Date Updated Descending</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
                 {postDisplay.length > 0 ? (
                     <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', width: "100%"}}>
-                        {postDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0,4)
-                        .map((post) => (
+                        {currentPosts.map(post => (
                             <li key={post.post_id} style={{ margin: '10px', flex: '0 0 20%', backgroundColor: 'white', padding: '10px', borderRadius: '5px'}}>
                                 <button style={{borderRadius:"10px", width:"100%"}} onClick={() => handleShowPostInfo(post)}>
                                     <h3>{post.post_name}</h3>
@@ -590,7 +644,11 @@ function ClubPage(){
                 ) : (
                     <p>No posts found</p>
                 )}
-                <button type='button' style={{justifyContent:"left", marginLeft: 'auto', marginRight: '14%', borderRadius:"10px"}}>More Posts</button>
+                <div  style={{justifyContent: 'center', alignItems: 'center', display:"flex", margin:"auto" }}>
+                    <Button style={{backgroundColor:"black", borderColor:"black", width: "100px"}} onClick={handlePreviousPosts} disabled={currentPostPage === 1}>Previous</Button>
+                    <p style={{margin:"10px"}}>Page {currentPostPage} of {Math.ceil(postDisplay.length / postsPerPage)}</p>
+                    <Button style={{backgroundColor:"black", borderColor:"black", width:"100px"}} onClick={handleNextPosts} disabled={currentPostPage >= Math.ceil(postDisplay.length / postsPerPage)}>Next</Button>
+                </div>
             </div>
             <div style={{backgroundColor:"grey", maxHeight: "100vh"}}className='profile-body'>
                 <h1>Events {isAdmin || isOwner ? (
@@ -601,11 +659,21 @@ function ClubPage(){
                   <>
                   </>
                 )}</h1>
+                <Dropdown style={{padding:"10px"}}>
+                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                        Sort by
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item style={{backgroundColor: 'lightgrey'}} onClick ={() => sortEvents('Date Created Ascending')}>Date Created Ascending</Dropdown.Item>
+                        <Dropdown.Item style={{backgroundColor: 'lightgrey'}}onClick ={() => sortEvents('Date Created Descending')}>Date Created Descending</Dropdown.Item>
+                        <Dropdown.Item onClick ={() => sortEvents('Date Updated Ascending')}>Date Updated Ascending</Dropdown.Item>
+                        <Dropdown.Item onClick ={() => sortEvents('Date Updated Descending')}>Date Updated Descending</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
                 {eventDisplay.length > 0 ? (
                     <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none' }}>
-                        {eventDisplay.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-                        .map((event) => (
-                            <li key={event.event_id} style={{ margin: '10px', flex: '0 0 30%', backgroundColor: 'white', padding: '10px', borderRadius: '5px' }}>
+                        {currentEvents.map(event => (
+                            <li key={event.event_id} style={{ margin: '10px', flex: '0 0 29%', backgroundColor: 'white', padding: '10px', borderRadius: '5px', minWidth: '300px' }}>
                                 <button style={{borderRadius:"10px", width:"100%"}} onClick={() => handleShowEventInfo(event)}>
                                     <h3>{event.event_name}</h3>
                                 </button>
@@ -619,6 +687,11 @@ function ClubPage(){
                 ) : (
                     <p>No events found</p>
                 )}
+                <div  style={{justifyContent: 'center', alignItems: 'center', display:"flex", margin:"auto" }}>
+                    <Button style={{backgroundColor:"black", borderColor:"black", width: "100px"}} onClick={handlePreviousEvents} disabled={currentEventPage === 1}>Previous</Button>
+                    <p style={{margin:"10px"}}>Page {currentEventPage} of {Math.ceil(eventDisplay.length / eventsPerPage)}</p>
+                    <Button style={{backgroundColor:"black", borderColor:"black", width:"100px"}} onClick={handleNextEvents} disabled={currentEventPage >= Math.ceil(eventDisplay.length / eventsPerPage)}>Next</Button>
+                </div>
             </div>
             <div className='profile-body'>
                 <p>Members:</p>
@@ -860,7 +933,8 @@ function ClubPage(){
                                     {selectedPost.post_image && <img src={selectedPost.post_image} alt={`${selectedPost.post_name} picture`} style={{ width: '60%', height: '60%', objectFit: 'cover' }} />}
                                 </div>
                                 <p>{selectedPost.content}</p>
-                                <p>{new Date(selectedPost.created_at).toLocaleDateString('en-US', dateOptions)}</p>
+                                <p>Created {new Date(selectedPost.created_at).toLocaleDateString('en-US', dateOptions)}</p>
+                                <p>Edited {new Date(selectedPost.updated_at).toLocaleDateString('en-US', dateOptions)}</p>
                             </>
                         )
                     )}
