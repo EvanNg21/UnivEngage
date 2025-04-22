@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_04_12_053850) do
+ActiveRecord::Schema[7.2].define(version: 2025_04_22_165038) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -83,16 +83,27 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_12_053850) do
     t.index ["club_id"], name: "index_events_on_club_id"
   end
 
+  create_table "post_likes", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id", "user_id"], name: "index_post_likes_on_post_id_and_user_id", unique: true
+    t.index ["post_id"], name: "index_post_likes_on_post_id"
+    t.index ["user_id"], name: "index_post_likes_on_user_id"
+  end
+
   create_table "posts", primary_key: "post_id", force: :cascade do |t|
     t.string "post_name"
     t.text "content", null: false
     t.integer "views_count"
-    t.integer "likes_count"
     t.integer "comments_count"
     t.integer "club_id", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "liked_by"
+    t.integer "likes_count", default: 0
     t.index ["club_id"], name: "index_posts_on_club_id"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
@@ -117,6 +128,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_12_053850) do
   add_foreign_key "event_attendances", "events", primary_key: "event_id"
   add_foreign_key "event_attendances", "users", primary_key: "user_id"
   add_foreign_key "events", "clubs", primary_key: "club_id"
+  add_foreign_key "post_likes", "posts", primary_key: "post_id"
+  add_foreign_key "post_likes", "users", primary_key: "user_id"
   add_foreign_key "posts", "clubs", primary_key: "club_id"
   add_foreign_key "posts", "users", primary_key: "user_id"
 end

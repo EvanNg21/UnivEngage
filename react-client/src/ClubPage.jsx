@@ -13,6 +13,8 @@ function ClubPage(){
     const [isMember, setIsMember] = useState(false);
     const [memberData, setMemberData] = useState([]);
     const [attendanceData, setAttendanceData] = useState([]);
+    const [likedData, setLikedData] = useState([]);
+    const [liked,  setLiked] = useState(false);
     const [isAttending, setIsAttending] = useState(false);
     
     const [clubData, setClubData] = useState([]);
@@ -78,14 +80,7 @@ function ClubPage(){
         }
     }, [clubData.owner_id, loggedinUser]);
 
-    useEffect(() => {
-        if(selectedEvent){
-            const attending = attendanceData.some(attending => attending.user_id.toString() === loggedinUser);
-            setIsAttending(attending);
-        };
-    }, [attendanceData, loggedinUser, selectedEvent]);
-
-
+    
     const [previewImage, setPreviewImage] = useState('');
     
     useEffect(() => {
@@ -125,16 +120,9 @@ function ClubPage(){
                     const club = Array.isArray(data) ? 
                         data.find(u => u.club_id === parseInt(clubId)) : 
                         data;
-                    console.log('Club Data Response:', clubData); // Debugging
                     if (club){
-                        setClubData({
-                            club_name: club.club_name || '',
-                            description: club.description || '',
-                            owner_id: club.owner_id || '',
-                            club_id: club.club_id||'',
-                            members: club.members || [],
-                            club_picture_url: club.club_picture_url || '',
-                        });
+                        setClubData(data);
+                        console.log('Club Data Response:', clubData);
                         if (club.club_picture_url) {
                             setPreviewImage(club.club_picture_url);
                         }
@@ -192,30 +180,34 @@ function ClubPage(){
 
     //get users attending event________________________________________________________________________________________________
     useEffect(() => {
-        const getAttendance = async () => {
-            try {
-                const response = await fetch(`http://127.0.0.1:3000/api/v1/events/${selectedEvent.event_id}/attending`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Attendance Data", data);
-                    setAttendanceData(data.attending);
-                } else {
-                    console.error("HTTP error: ", response.status);
+        if (selectedEvent){
+            const getAttendance = async () => {
+                try {
+                    const response = await fetch(`http://127.0.0.1:3000/api/v1/events/${selectedEvent.event_id}/attending`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log("Attendance Data", data);
+                        setAttendanceData(data.attending);
+                        setIsAttending(data.attending.some(user => user.user_id.toString() === loggedinUser));
+                    } else {
+                        console.error("HTTP error: ", response.status);
+                    }
+                } catch (e) {
+                    console.log("An error has occurred: ", e);
                 }
-            } catch (e) {
-                console.log("An error has occurred: ", e);
-            }
-        };
-        getAttendance();
+            };
+            getAttendance();
+        }
     }, [selectedEvent, loggedinUser]);
 
     //attend event
     const attendEvent = async () => {
+        if (!selectedEvent) return;
         try {
             const response = await fetch(`http://127.0.0.1:3000/api/v1/events/${selectedEvent.event_id}/attend`, {
                 method: 'POST',
@@ -227,7 +219,7 @@ function ClubPage(){
             if (response.ok) {
                 const data = await response.json();
                 console.log("Event attended successfully", data);
-                alert("Event attended successfully");
+                setIsAttending(true);
             } else {
                 console.error("HTTP error: ", response.status);
             }
@@ -238,6 +230,7 @@ function ClubPage(){
 
     //unattend event
     const unattendEvent = async () => {
+        if (!selectedEvent) return;
         try {
             const response = await fetch(`http://127.0.0.1:3000/api/v1/events/${selectedEvent.event_id}/unattend`, {
                 method: 'DELETE',
@@ -249,7 +242,7 @@ function ClubPage(){
             if (response.ok) {
                 const data = await response.json();
                 console.log("Event unattended successfully", data);
-                alert("Event unattended successfully");
+                setIsAttending(false);
             } else {
                 console.error("HTTP error: ", response.status);
             }
@@ -582,6 +575,79 @@ function ClubPage(){
         }
     }
 
+    //likes_________________________________________________
+    useEffect(() => {
+        if (selectedPost) {
+            const getLikedData = async () => {
+                try {
+                    const response = await fetch(`http://127.0.0.1:3000/api/v1/posts/${selectedPost.post_id}/likes`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log("liked Data", data);
+                        setLikedData(data.liked);
+                        // Check if the logged-in user has liked the post
+                        setLiked(data.liked.some(user => user.user_id.toString() === loggedinUser));
+                    } else {
+                        console.error("HTTP error: ", response.status);
+                    }
+                } catch (e) {
+                    console.log("An error has occurred: ", e);
+                }
+            };
+            getLikedData();
+        }
+    }, [selectedPost, loggedinUser]);
+
+    const handleLike = async () => {
+        if (!selectedPost) return;
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/posts/${selectedPost.post_id}/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: loggedinUser })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Post Liked successfully", data);
+                setLiked(true);
+            } else {
+                console.error("HTTP error: ", response.status);
+            }
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+        }
+    };
+
+    const handleUnlike = async () => {
+        if (!selectedPost) return;
+        try {
+            const response = await fetch(`http://127.0.0.1:3000/api/v1/posts/${selectedPost.post_id}/unlike`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: loggedinUser })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Post Unliked successfully", data);
+                setLiked(false);
+            } else {
+                console.error("HTTP error: ", response.status);
+            }
+        } catch (e) {
+            console.log("An error has occurred: ", e);
+        }
+    };
+    
+
     return (
         <div className='base-page'>
             <header className='profile-header'>
@@ -637,7 +703,8 @@ function ClubPage(){
                                     {post.post_image && <img src={post.post_image} alt={`${post.post_name} picture`} style={{ width: '100px', height: '100px', objectFit: 'cover' }} />}
                                 </button>
                                 <p>{post.content}</p>
-                                <p>{new Date(post.created_at).toLocaleDateString('en-US', dateOptions)}</p>
+                                <p style={{fontSize:"15px"}}>{new Date(post.created_at).toLocaleDateString('en-US', dateOptions)}</p>
+                                <p style={{fontSize:"15px"}}>❤: {post.likes_count}</p>
                             </li>
                         ))}
                     </ul>
@@ -694,7 +761,7 @@ function ClubPage(){
                 </div>
             </div>
             <div className='profile-body'>
-                <p>Members:</p>
+                <p>Members({clubData.member_count}):</p>
                 {clubData.members && clubData.members.length > 0 ? (
                   <ul>
                     {clubData.members.map((member) => (
@@ -872,7 +939,7 @@ function ClubPage(){
                         </>
                     )}
                     {isMember ? (
-                        attendanceData.some(attendance => attendance.user_id.toString() === loggedinUser)?(
+                        isAttending?(
                             <>
                                 <Button variant="success" onClick={unattendEvent}>
                                     Unattend
@@ -940,6 +1007,24 @@ function ClubPage(){
                     )}
                 </Modal.Body>
                 <Modal.Footer>
+                    {loggedinUser?(
+                        liked?(
+                            <>
+                                <Button onClick={handleUnlike} style={{justifyContent:'right', marginRight:"auto", backgroundColor:"transparent"}} variant="success">
+                                    💔
+                                </Button>
+                            </>
+                        ):(
+                        <>
+                            <Button  onClick={handleLike} style={{justifyContent:'right', marginRight:"auto"}} variant="success">
+                                ❤ 
+                            </Button>
+                        </>
+                        )
+                    ) : (
+                        <>
+                        </>
+                    )}
                     {isAdmin || isOwner ? (
                         <>
                             {isEditPostMode ? (

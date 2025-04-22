@@ -3,7 +3,13 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post 'logins', to: 'logins#create'
-      resources :posts
+      resources :posts do
+        member do
+          get 'likes', to: 'posts#likes'
+          post 'like', to: 'posts#like'
+          delete 'unlike', to: 'posts#unlike'
+        end
+      end
       resources :events do
         member do
           get 'attending', to: 'events#attending'

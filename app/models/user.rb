@@ -5,6 +5,8 @@ class User < ApplicationRecord
     has_many :clubs, through: :club_members
     has_many :posts, foreign_key: 'user_id'
     has_many :event_attendances
+    has_many :post_likes
+    has_many :liked_posts, through: :post_likes
     has_many :events, through: :event_attendances, source: :event
     has_one_attached :profile_picture
 
