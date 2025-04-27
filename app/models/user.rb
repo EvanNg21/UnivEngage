@@ -9,7 +9,7 @@ class User < ApplicationRecord
     has_many :liked_posts, through: :post_likes
     has_many :events, through: :event_attendances, source: :event
     has_one_attached :profile_picture
-
+    validates :username, uniqueness: {case_sensitive: false}
     has_many :owned_clubs, class_name: 'Club', foreign_key: 'owner_id'
 
     def admin_of?(club)

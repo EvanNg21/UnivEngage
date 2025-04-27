@@ -28,7 +28,7 @@ function CreateClub(){
                 setMessage('Club created successfully!');
             } else{
                 console.error('Failed to create club');
-                setMessage('Failed to create club');
+                setMessage('Failed to create club, Club may already exist');
             }
         } catch (error){
             console.error('Error creating club', error);

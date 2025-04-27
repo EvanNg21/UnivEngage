@@ -61,11 +61,8 @@ function App() {
             <Navbar.Brand className='univengage' href="/home"  >Univengage</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Nav className="ms-auto">
-                <Nav.Link style={{color:'black'}}href="/">News</Nav.Link>
                 <Nav.Link style={{color:'black'}}href="/clubs">Explore Clubs</Nav.Link>
                 <Nav.Link style={{color:'black'}}href="/events">Attend Events</Nav.Link>
-                <Nav.Link style={{color:'black'}}href="/">Forms</Nav.Link>
-                <Nav.Link style={{color:'black'}}href="/">Campus Resources</Nav.Link>
               </Nav>
               <Nav className = "navsignup">
                 <form onSubmit={handleSearch}>
@@ -85,9 +82,7 @@ function App() {
               </Nav>
         </Navbar>
       <Routes>
-          {/* Redirect from / to /home */}
           <Route path="/" element={<Navigate to="/home" />} />
-          {/* Define route for /home */}
           <Route path="/home" element={<Home />} />
           <Route path="/clubs" element={<Clubs />} />
           <Route path="/events" element={<Events />} />
@@ -196,15 +191,13 @@ const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '
 
     <div className="home-top">
       <h1 className="center fade-in">Welcome to Univengage!</h1>
+      <p> 
+        Welcome to our website, where you can connect with your university community and find events and clubs that suit your interests.
+      </p>
     </div>
-
-    <div className = "home-button">
-        <button style={{width:'100px'}}>Previous</button>
-        <button style={{width:'100px'}}>Next</button>
-    </div>
-
+    
     <div className="home-body">
-      <h2>Top Clubs</h2>
+      <h2 style={{paddingLeft:"50px"}}>Top Clubs</h2>
       <div style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', backgroundColor: 'white', justifyContent:"center" }}>
       {Array.isArray(clubInfo) && clubInfo.length > 0 ? (
           clubInfo.sort((a, b) => (b.member_count) - (a.member_count)).slice(0,4).map(club => {
@@ -226,7 +219,7 @@ const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '
     </div>
 
     <div className="home-body">
-      <h2>Latest Events</h2>
+      <h2 style={{paddingLeft:"50px"}}>Latest Events</h2>
       <div style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', backgroundColor: 'white', justifyContent:"center" }}>
       {Array.isArray(events) && events.length > 0 ? (
           events.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0,4).map(event => {

@@ -133,7 +133,7 @@ function Search() {
                 <ul style={{ display: 'flex', flexWrap: 'wrap',  listStyleType: 'none', width: "100%"}}>
                     {posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                     .map((posts) => (
-                        <li key={posts.post_id} style={{ margin: '10px', flex: '0 0 23%', backgroundColor: 'white', padding: '10px', borderRadius: '5px', backgroundColor:"lightgrey"}}>
+                        <li key={posts.post_id} style={{ margin: '10px', flex: '0 0 23%',  padding: '10px', borderRadius: '5px', backgroundColor:"lightgrey"}}>
                             <button style={{borderRadius:"10px", width:"100%"}} onClick={() => handleShowPostInfo(posts)} >
                                 <h3>{posts.post_name}</h3>
                                 {posts.post_image && <img src={posts.post_image} alt={`${posts.post_name} picture`} style={{ width: '100px', height: '100px', objectFit: 'cover' }} />}

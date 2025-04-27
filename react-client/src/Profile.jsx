@@ -9,17 +9,9 @@ function Profile() {
     const token = localStorage.getItem('token');
     const {userId} = useParams();
     const loggedinUserId = localStorage.getItem('id');
-    const [userData, setUserData] = useState({
-        username: '',
-        email: '',
-        first_name: '', 
-        last_name: '',  
-        bio: '',
-        date_of_birth: '',
-        profile_picture: ''
-    });
-    const [clubData, setClubData] = useState([]);
+    const [userData, setUserData] = useState([]);
     const [ownedClubs, setOwnedClubs] = useState([]);
+    const [memberData, setMemberData] = useState([]);
     
 
     useEffect(() => {
@@ -102,13 +94,12 @@ function Profile() {
                 if (response.ok) {
                     const data = await response.json();
                     const clubsArray = Array.isArray(data) ? data : [data];
-                    setClubData(clubsArray);
-                    console.log('club data', clubData)
-                    
                     const filterClubs = clubsArray.filter(club => club.owner_id === userId);
                     setOwnedClubs(filterClubs);
-                    console.log('owned clubs', ownedClubs)
-                    
+                    console.log('owned clubs', filterClubs)
+                    const filterMembers = clubsArray.filter(club => club.members.some(members=> members.user_id == userId));
+                    setMemberData(filterMembers);
+                    console.log('member data', filterMembers);
                 } else {
                     console.error('Failed to fetch club data');
                 }
@@ -137,19 +128,35 @@ function Profile() {
                         <></>
                 )}
             </div>
-            <div className='profile-body'>
-                <p>My clubs</p>
-                {ownedClubs.length > 0 ? (
-                ownedClubs.map(club => (
-                    <div key={club.club_id}>
-                        <Nav.Link href={`/clubPage/${club.club_id}`} style={{fontSize: '30px'}}>{club.club_name} {club.club_picture_url && <img src={club.club_picture_url} alt={`${club.club_name} picture`} style={{ width: '50px', height: '50px', borderRadius: '75px', objectFit: 'cover' }} />}</Nav.Link>
-                        <p>Description: {club.description}</p>
-                        <p>_____________________________________________________</p>
-                        </div>
-                    ))
-                ) : (
-                    <p>No clubs available</p>
-                )}
+            <div  style={{display: 'flex', flexWrap: 'wrap', backgroundColor:"white", paddingLeft: '150px', columnGap: '200px', paddingTop: '20px' }}>
+                <div >
+                    <p>My Clubs</p>
+                    {ownedClubs.length > 0 ? (
+                    ownedClubs.map(club => (
+                        <div key={club.club_id}>
+                            <Nav.Link href={`/clubPage/${club.club_id}`} style={{fontSize: '30px'}}>{club.club_name} {club.club_picture_url && <img src={club.club_picture_url} alt={`${club.club_name} picture`} style={{ width: '50px', height: '50px', borderRadius: '75px', objectFit: 'cover' }} />}</Nav.Link>
+                            <p>Description: {club.description}</p>
+                            <p>_____________________________________________________</p>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No clubs available</p>
+                    )}
+                </div>
+                <div >
+                    <p>Joined Clubs</p>
+                    {memberData.length > 0 ? (
+                    memberData.map(club => (
+                        <div key={club.club_id}>
+                            <Nav.Link href={`/clubPage/${club.club_id}`} style={{fontSize: '30px'}}>{club.club_name} {club.club_picture_url && <img src={club.club_picture_url} alt={`${club.club_name} picture`} style={{ width: '50px', height: '50px', borderRadius: '75px', objectFit: 'cover' }} />}</Nav.Link>
+                            <p>Description: {club.description}</p>
+                            <p>_____________________________________________________</p>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No clubs available</p>
+                    )}
+                </div>
             </div>
         </div>
     );

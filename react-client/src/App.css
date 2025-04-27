@@ -58,15 +58,17 @@
 
 .home-top {
   display: flex;
-  align-items:center;
-  justify-content: left;
+  align-items:flex-start;
   min-height: 50vh; /* Ensure it takes up the full viewport height */
   background-color: #b3b3b3;
   color: black;
    /* Add padding for spacing */
   gap: 10px; /* Add spacing between the title and the search bar */
   width:100%;
-  padding: 100px;
+  padding-top: 150px;
+  padding-left: 50px;
+  flex-direction: column;
+  
 }
 
 .home-body {

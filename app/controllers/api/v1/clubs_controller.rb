@@ -58,11 +58,16 @@ module Api
           members = club.members.select(:email, :first_name, :last_name, :user_id, :role)
   
           render json: { status: 'SUCCESS', members: members }
+        rescue ActiveRecord::RecordNotFound
+          render json: { status: 'ERROR', message: 'Club not found' }, status: :not_found
         end
   
         def index
           clubs = Club.select(:club_id, :club_name, :description, :created_at, :updated_at, :owner_id, :member_count)
-          render json: clubs.map { |club| club.as_json.merge(club_picture_url: club.club_picture.attached? ? url_for(club.club_picture) : nil) }, status: :ok
+          render json: clubs.map { |club| club.as_json.merge(club_picture_url: club.club_picture.attached? ? url_for(club.club_picture) : nil,
+          members: club.members.select(:first_name, :last_name, :user_id, :email).map { |member| { first_name: member.first_name, last_name: member.last_name, user_id: member.user_id, email: member.email } }
+          ) 
+        }, status: :ok
         end
   
         def show
